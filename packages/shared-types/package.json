@@ -1,16 +1,23 @@
 {
-  "name": "@tmrw/shared-types",
-  "version": "1.0.0",
-  "description": "",
-  "main": "dist/index.js",
-  "scripts": {
-    "build": "tsc --project tsconfig.json",
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "packageManager": "pnpm@10.12.4",
-  "devDependencies": {
-    "typescript": "^5.9.2"
-  }
+	"name": "@repo/shared-types",
+	"version": "1.0.0",
+	"description": "Shared TypeScript types for the monorepo",
+	"type": "module",
+	"main": "./dist/index.js",
+	"scripts": {
+		"dev": "tsc --watch --preserveWatchOutput",
+		"build": "tsc",
+		"check-types": "tsc --noEmit",
+		"format": "prettier --write .",
+		"lint": "eslint ."
+	},
+	"packageManager": "pnpm@10.12.4",
+	"devDependencies": {
+		"@repo/eslint-config": "workspace:*",
+		"@repo/typescript-config": "workspace:*",
+		"eslint": "^9.18.0",
+		"prettier": "^3.4.2",
+		"typescript": "^5.9.2",
+		"typescript-eslint": "^8.20.0"
+	}
 }
