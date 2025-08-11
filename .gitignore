@@ -8,3 +8,6 @@
 **/.turbo/
 **/.svelte-kit/
 **/build
+
+# Prisma 
+**/generated/prisma/
