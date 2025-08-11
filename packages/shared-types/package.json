@@ -3,9 +3,10 @@
 	"version": "1.0.0",
 	"description": "Shared TypeScript types for the monorepo",
 	"type": "module",
-	"main": "./dist/index.js",
+	"exports": {
+		".": "src/index.ts"
+	},
 	"scripts": {
-		"dev": "tsc --watch --preserveWatchOutput",
 		"build": "tsc",
 		"check-types": "tsc --noEmit",
 		"format": "prettier --write .",

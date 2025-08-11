@@ -1,6 +1,6 @@
 # General
-.DS_Store
-.env
+*.DS_Store
+*.env
 
 # Node
 **/node_modules/
@@ -8,6 +8,7 @@
 **/.turbo/
 **/.svelte-kit/
 **/build
+*.tsbuildinfo
 
 # Prisma 
 **/generated/prisma/
