@@ -3,7 +3,10 @@
 declare global {
 	namespace App {
 		// interface Error {}
-		// interface Locals {}
+		interface Locals {
+			user?: import('better-auth/svelte').User | null;
+			session?: import('better-auth/svelte').Session | null;
+		}
 		// interface PageData {}
 		// interface PageState {}
 		// interface Platform {}

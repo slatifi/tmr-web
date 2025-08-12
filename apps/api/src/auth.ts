@@ -8,7 +8,8 @@ const authConfig: BetterAuthOptions = {
 	database: prismaAdapter(prisma, {
 		provider: 'postgresql'
 	}),
-	emailAndPassword: { enabled: true }
+	trustedOrigins: ['http://localhost:5173'],
+	emailAndPassword: { enabled: true, autoSignIn: false }
 };
 
 export const auth = betterAuth(authConfig) as ReturnType<typeof betterAuth>;
