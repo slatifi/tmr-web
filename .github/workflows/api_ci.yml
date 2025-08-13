@@ -37,9 +37,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Create .env file
-        run: echo "RESEND_API_KEY=re_123" > .env
-
       - name: Generate Prisma client
         run: pnpm prisma generate
 

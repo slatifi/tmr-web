@@ -5,6 +5,7 @@ import { Resend } from 'resend';
 
 const prisma = new PrismaClient();
 
+console.log(process.env.RESEND_API_KEY);
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 const authConfig: BetterAuthOptions = {
