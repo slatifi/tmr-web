@@ -1,0 +1,60 @@
+<script lang="ts">
+	import type { ComponentProps } from 'svelte';
+	import * as Sidebar from '$lib/components/ui/sidebar';
+	import type { SidebarItem } from './types';
+	import SidebarNav from './sidebar-nav.svelte';
+
+	import favicon from '$lib/assets/favicon.png';
+	import GaugeIcon from '@lucide/svelte/icons/gauge';
+	import HammerIcon from '@lucide/svelte/icons/hammer';
+	import SidebarUser from './sidebar-user.svelte';
+
+	let {
+		ref = $bindable(null),
+		collapsible = 'icon',
+		user,
+		...restProps
+	}: ComponentProps<typeof Sidebar.Root> & { user: { name: string; email: string } } = $props();
+
+	const sidebarItems: SidebarItem[] = [
+		{
+			title: 'Dashboard',
+			icon: GaugeIcon,
+			url: '/dashboard'
+		},
+		{
+			title: 'Guideline Builder',
+			icon: HammerIcon,
+			url: '/guideline'
+		}
+	];
+</script>
+
+<Sidebar.Root {collapsible} {...restProps}>
+	<Sidebar.Header>
+		<Sidebar.Menu>
+			<Sidebar.MenuItem>
+				<Sidebar.MenuButton size="lg">
+					{#snippet child({ props })}
+						<a href="/dashboard" {...props}>
+							<div
+								class="flex aspect-square size-8 items-center justify-center rounded-sm bg-sidebar-border text-sidebar-primary-foreground"
+							>
+								<img src={favicon} alt="TMR-W Logo" class="h-6 w-6" />
+							</div>
+							<div class="flex flex-col gap-0.5 leading-none">
+								<span class="text-base font-medium">TMR-W</span>
+							</div>
+						</a>
+					{/snippet}
+				</Sidebar.MenuButton>
+			</Sidebar.MenuItem>
+		</Sidebar.Menu>
+	</Sidebar.Header>
+	<Sidebar.Content>
+		<SidebarNav items={sidebarItems} />
+	</Sidebar.Content>
+	<Sidebar.Footer>
+		<SidebarUser {user} />
+	</Sidebar.Footer>
+</Sidebar.Root>

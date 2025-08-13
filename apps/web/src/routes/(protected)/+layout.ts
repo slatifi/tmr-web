@@ -1,10 +1,11 @@
 import { getSession } from '$lib/auth';
 import { redirect } from '@sveltejs/kit';
+import type { Session, User } from '$lib/auth';
+import type { LayoutLoad } from './$types';
 
-export const load = async ({ url }) => {
-	const session = await getSession();
-	const user = session?.data?.user;
-	console.log(url.pathname);
+export const load: LayoutLoad = async ({ url }) => {
+	const session: Session | null = await getSession().then((res) => res.data);
+	const user: User | undefined = session?.user;
 
 	if (!session || !user) {
 		redirect(302, '/login?redirect=' + encodeURIComponent(url.pathname));
@@ -13,5 +14,5 @@ export const load = async ({ url }) => {
 	return {
 		session,
 		user
-	};
+	} as { session: Session; user: User };
 };
