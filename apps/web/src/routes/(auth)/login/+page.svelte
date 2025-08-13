@@ -1,19 +1,23 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import type { PageProps } from './$types';
+
 	import { signIn } from '$lib/auth';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
+	import Loader2Icon from '@lucide/svelte/icons/loader-2';
 
-	let { data } = $props();
+	let { data }: PageProps = $props();
 
 	let email = $state<string>('');
 	let password = $state<string>('');
 	let remember = $state<boolean>(false);
 	let error = $state<string | undefined>(undefined);
 	let validation = $state<{ email?: string } | null>(null);
+	let loading = $state<boolean>(false);
 
 	async function handleSubmit(event: Event) {
 		event.preventDefault();
@@ -23,11 +27,13 @@
 			return;
 		}
 
+		loading = true;
 		const response = await signIn.email({ email, password, rememberMe: remember });
 
 		if (response.error) {
 			error = response.error.message;
 			validation = null;
+			loading = false;
 			return;
 		}
 
@@ -60,6 +66,21 @@
 				Please login to access the requested page.
 			</div>
 		{/if}
+		{#if data?.request}
+			<div class="mb-5 rounded-md bg-sidebar-accent p-4 text-sm text-sidebar-accent-foreground">
+				If this email is registered, you will receive a password reset link shortly.
+			</div>
+		{/if}
+		{#if data?.reset}
+			<div class="mb-5 rounded-md bg-sidebar-accent p-4 text-sm text-sidebar-accent-foreground">
+				Your password has been reset successfully. Please login with your new password.
+			</div>
+		{/if}
+		{#if data?.reset_error}
+			<div class="mb-5 rounded-md bg-destructive/10 p-4 text-sm text-destructive">
+				There was an error resetting your password. Please try again or contact support.
+			</div>
+		{/if}
 		<form onsubmit={handleSubmit}>
 			<div class="grid gap-4">
 				<div class="grid gap-2">
@@ -69,6 +90,7 @@
 						type="email"
 						placeholder="me@example.com"
 						bind:value={email}
+						disabled={loading}
 						required
 					/>
 					{#if validation?.email}
@@ -79,8 +101,16 @@
 					<div class="flex items-center">
 						<Label>Password</Label>
 					</div>
-					<Input name="password" type="password" bind:value={password} required />
-					<a href="##" class="ml-auto inline-block text-sm underline"> Forgot your password? </a>
+					<Input
+						name="password"
+						type="password"
+						bind:value={password}
+						required
+						disabled={loading}
+					/>
+					<a href="/request-reset" class="ml-auto inline-block text-sm underline">
+						Forgot your password?
+					</a>
 				</div>
 				<div class="flex items-center justify-between">
 					<div class="flex items-center space-x-2">
@@ -88,7 +118,13 @@
 						<Label for="remember">Remember me</Label>
 					</div>
 				</div>
-				<Button type="submit" class="w-full">Login</Button>
+				<Button type="submit" class="w-full" disabled={loading}>
+					{#if loading}
+						<Loader2Icon class="animate-spin" />
+					{:else}
+						Login
+					{/if}
+				</Button>
 			</div>
 		</form>
 		<div class="mt-6 flex items-center justify-center gap-2">

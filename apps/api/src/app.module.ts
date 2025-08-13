@@ -7,7 +7,10 @@ import { AuthModule } from '@thallesp/nestjs-better-auth';
 import { auth } from './auth';
 
 @Module({
-	imports: [AuthModule.forRoot(auth), ConfigModule.forRoot()],
+	imports: [
+		ConfigModule.forRoot({ isGlobal: true, envFilePath: '../env' }),
+		AuthModule.forRoot(auth)
+	],
 	controllers: [AppController],
 	providers: [AppService]
 })
