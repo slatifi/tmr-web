@@ -13,7 +13,7 @@ datasource db {
 }
 
 model User {
-  id            String    @id
+  id            String      @id
   name          String
   email         String
   emailVerified Boolean
@@ -22,6 +22,7 @@ model User {
   updatedAt     DateTime
   sessions      Session[]
   accounts      Account[]
+  guidelines    Guideline[]
 
   @@unique([email])
   @@map("user")
@@ -70,4 +71,82 @@ model Verification {
   updatedAt  DateTime?
 
   @@map("verification")
+}
+
+// TMR models
+
+model Transition {
+  id             Int          @id @default(autoincrement())
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  derivative     Derivative
+  property       String // TODO: Use a stricter type for properties
+  pre            Situation
+  post           Situation
+  contribution   Contribution @relation(fields: [contributionId], references: [id], onDelete: Cascade)
+  contributionId Int          @unique
+
+  @@map("transition")
+}
+
+enum Derivative {
+  INCREASE
+  DECREASE
+  MAINTAIN
+}
+
+enum Situation {
+  NORMAL
+  HIGH
+  LOW
+  UNKNOWN
+}
+
+model Contribution {
+  id               Int               @id @default(autoincrement())
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  value            ContributionValue @default(NEUTRAL)
+  transition       Transition?
+  recommendation   Recommendation    @relation(fields: [recommendationId], references: [id], onDelete: Cascade)
+  recommendationId Int
+
+  @@map("contribution")
+}
+
+enum ContributionValue {
+  POSITIVE
+  NEGATIVE
+  NEUTRAL
+}
+
+model Recommendation {
+  id           Int                    @id @default(autoincrement())
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
+  action       String // TODO: Use a stricter type for actions
+  strength     RecommendationStrength
+  contribution Contribution[]
+  guideline    Guideline              @relation(fields: [guidelineId], references: [id], onDelete: Cascade)
+  guidelineId  Int
+
+  @@map("recommendation")
+}
+
+enum RecommendationStrength {
+  SHOULD
+  NOT
+}
+
+model Guideline {
+  id              Int              @id @default(autoincrement())
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  title           String
+  description     String?
+  recommendations Recommendation[]
+  user            User             @relation(fields: [userId], references: [id])
+  userId          String
+
+  @@map("guideline")
 }
