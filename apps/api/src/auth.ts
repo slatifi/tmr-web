@@ -1,10 +1,12 @@
 import { betterAuth, BetterAuthOptions } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
-import { PrismaClient } from './generated/prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { Resend } from 'resend';
 
 const prisma = new PrismaClient();
 
+// TODO: Move auth config into a module to allow for ConfigService injection.
+// Waiting for https://github.com/ThallesP/nestjs-better-auth/pull/11
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 const authConfig: BetterAuthOptions = {

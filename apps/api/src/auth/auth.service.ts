@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { betterAuth, BetterAuthOptions } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
-import { PrismaClient } from '../generated/prisma/client';
-import type { PrismaClient as PrismaClientType } from '../generated/prisma/client';
+import { PrismaClient } from '@prisma/client';
+import type { PrismaClient as PrismaClientType } from '@prisma/client';
 import { Resend } from 'resend';
 import type { Resend as ResendType } from 'resend';
 

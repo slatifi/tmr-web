@@ -3,15 +3,19 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 
-import { AuthModule } from '@thallesp/nestjs-better-auth';
+import { AuthModule, AuthGuard } from '@thallesp/nestjs-better-auth';
 import { auth } from './auth';
+import { DatabaseModule } from './database/database.module';
+import { CigModule } from './cig/cig.module';
 
 @Module({
 	imports: [
-		ConfigModule.forRoot({ isGlobal: true, envFilePath: '../env' }),
-		AuthModule.forRoot(auth)
+		ConfigModule.forRoot({ isGlobal: true }),
+		AuthModule.forRoot(auth),
+		DatabaseModule,
+		CigModule
 	],
 	controllers: [AppController],
-	providers: [AppService]
+	providers: [AppService, { provide: 'APP_GUARD', useClass: AuthGuard }]
 })
 export class AppModule {}
