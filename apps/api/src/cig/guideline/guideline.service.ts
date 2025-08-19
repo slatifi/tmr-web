@@ -9,7 +9,7 @@ export class GuidelineService {
 	constructor(private db: DatabaseService) {}
 
 	async create(createGuidelineDto: CreateGuidelineDto, userId: string) {
-		return this.db.guideline.create({
+		const guideline = await this.db.guideline.create({
 			data: {
 				...createGuidelineDto,
 				user: {
@@ -19,13 +19,12 @@ export class GuidelineService {
 				}
 			}
 		});
+		return new Guideline(guideline);
 	}
 
 	async findAll(userId: string) {
 		const guidelines = await this.db.guideline.findMany({
-			where: {
-				userId: userId
-			},
+			where: { userId },
 			orderBy: {
 				createdAt: 'desc'
 			}
@@ -35,36 +34,25 @@ export class GuidelineService {
 
 	async findOne(id: number) {
 		const guideline = await this.db.guideline.findUnique({
-			where: {
-				id: id
-			}
+			where: { id }
 		});
 
-		if (!guideline) {
-			throw new NotFoundException(`Guideline with ID ${id} not found`);
-		}
-
+		if (!guideline) throw new NotFoundException(`Guideline with ID ${id} not found`);
 		return new Guideline(guideline);
 	}
 
 	async update(id: number, updateGuidelineDto: UpdateGuidelineDto) {
-		const existingGuideline = await this.db.guideline.findUnique({
-			where: { id }
-		});
-
-		if (!existingGuideline) {
-			throw new NotFoundException(`Guideline with ID ${id} not found`);
-		}
-
 		const updatedGuideline = await this.db.guideline.update({
 			where: { id },
 			data: updateGuidelineDto
 		});
+
+		if (!updatedGuideline) throw new NotFoundException(`Guideline with ID ${id} not found`);
 		return new Guideline(updatedGuideline);
 	}
 
 	async remove(id: number) {
-		return this.db.guideline.delete({
+		return await this.db.guideline.delete({
 			where: { id }
 		});
 	}

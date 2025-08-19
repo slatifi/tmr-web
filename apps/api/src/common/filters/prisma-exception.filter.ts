@@ -15,7 +15,15 @@ export class PrismaExceptionFilter extends BaseExceptionFilter {
 				const status = HttpStatus.CONFLICT;
 				response.status(status).json({
 					statusCode: status,
-					message: 'Unique constraint failed on the field'
+					message: `Unique constraint failed on the field: ${exception.meta?.target || 'unknown'}`
+				});
+				break;
+			}
+			case 'P2003': {
+				const status = HttpStatus.BAD_REQUEST;
+				response.status(status).json({
+					statusCode: status,
+					message: `Foreign key constraint failed on the field: ${exception.meta?.constraint || 'unknown'}`
 				});
 				break;
 			}
