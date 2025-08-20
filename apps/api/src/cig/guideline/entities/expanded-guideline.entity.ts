@@ -19,7 +19,7 @@ export class ExpandedGuideline {
 
 	recommendations: (Recommendation & {
 		contributions: (Contribution & {
-			transitions: Transition[];
+			transition: Transition;
 		})[];
 	})[];
 }

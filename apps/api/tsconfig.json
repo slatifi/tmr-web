@@ -5,7 +5,8 @@
     "rootDir": "./",
     "strictPropertyInitialization": false,
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "test/*": ["./test/*"]
     }
   }
 }

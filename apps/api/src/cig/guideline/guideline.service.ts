@@ -7,7 +7,7 @@ import { ExpandedGuideline } from './entities/expanded-guideline.entity';
 
 @Injectable()
 export class GuidelineService {
-	constructor(private db: DatabaseService) {}
+	constructor(private readonly db: DatabaseService) {}
 
 	async create(createGuidelineDto: CreateGuidelineDto, userId: string) {
 		const guideline = await this.db.guideline.create({
