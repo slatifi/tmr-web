@@ -3,6 +3,7 @@ import { CreateGuidelineDto } from './dto/create-guideline.dto';
 import { UpdateGuidelineDto } from './dto/update-guideline.dto';
 import { DatabaseService } from '@/database/database.service';
 import { Guideline } from './entities/guideline.entity';
+import { ExpandedGuideline } from './entities/expanded-guideline.entity';
 
 @Injectable()
 export class GuidelineService {
@@ -32,13 +33,26 @@ export class GuidelineService {
 		return guidelines.map((guideline) => new Guideline(guideline));
 	}
 
-	async findOne(id: number) {
-		const guideline = await this.db.guideline.findUnique({
-			where: { id }
-		});
+	async findOne(id: number, deep: boolean = false) {
+		const deepQuery = {
+			where: { id },
+			include: {
+				recommendations: {
+					include: {
+						contributions: {
+							include: {
+								transition: true
+							}
+						}
+					}
+				}
+			}
+		};
+
+		const guideline = await this.db.guideline.findUnique(deep ? deepQuery : { where: { id } });
 
 		if (!guideline) throw new NotFoundException(`Guideline with ID ${id} not found`);
-		return new Guideline(guideline);
+		return deep ? new ExpandedGuideline(guideline) : new Guideline(guideline);
 	}
 
 	async update(id: number, updateGuidelineDto: UpdateGuidelineDto) {

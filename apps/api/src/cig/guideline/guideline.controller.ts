@@ -4,6 +4,9 @@ import { CreateGuidelineDto } from './dto/create-guideline.dto';
 import { UpdateGuidelineDto } from './dto/update-guideline.dto';
 import { Session, type UserSession } from '@thallesp/nestjs-better-auth';
 import { ResourceOwnership } from '@/common/guards/resource-ownership.guard';
+import { ApiResponse } from '@nestjs/swagger';
+import { ExpandedGuideline } from './entities/expanded-guideline.entity';
+import { Guideline } from './entities/guideline.entity';
 
 @Controller('guideline')
 export class GuidelineController {
@@ -20,10 +23,18 @@ export class GuidelineController {
 		return this.guidelineService.findAll(session.user.id);
 	}
 
+	@Get('deep/:id')
+	@ResourceOwnership('guideline')
+	@ApiResponse({ status: 200, type: ExpandedGuideline })
+	findOneDeep(@Param('id', ParseIntPipe) id: number) {
+		return this.guidelineService.findOne(id, true);
+	}
+
 	@Get(':id')
 	@ResourceOwnership('guideline')
+	@ApiResponse({ status: 200, type: Guideline })
 	findOne(@Param('id', ParseIntPipe) id: number) {
-		return this.guidelineService.findOne(id);
+		return this.guidelineService.findOne(id, false);
 	}
 
 	@Patch(':id')

@@ -119,14 +119,14 @@ enum ContributionValue {
 }
 
 model Recommendation {
-  id           Int                    @id @default(autoincrement())
-  createdAt    DateTime               @default(now())
-  updatedAt    DateTime               @updatedAt
-  action       String // TODO: Use a stricter type for actions
-  strength     RecommendationStrength
-  contribution Contribution[]
-  guideline    Guideline              @relation(fields: [guidelineId], references: [id], onDelete: Cascade)
-  guidelineId  Int
+  id            Int                    @id @default(autoincrement())
+  createdAt     DateTime               @default(now())
+  updatedAt     DateTime               @updatedAt
+  action        String // TODO: Use a stricter type for actions
+  strength      RecommendationStrength
+  contributions Contribution[]
+  guideline     Guideline              @relation(fields: [guidelineId], references: [id], onDelete: Cascade)
+  guidelineId   Int
 
   @@map("recommendation")
 }
