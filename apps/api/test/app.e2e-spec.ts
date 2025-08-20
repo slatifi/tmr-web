@@ -4,13 +4,22 @@ import request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from './../src/app.module';
 
+class MockDatabaseService {
+	async onModuleInit() {
+		// Mock database connection logic
+	}
+}
+
 describe('AppController (e2e)', () => {
 	let app: INestApplication<App>;
 
 	beforeEach(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
 			imports: [AppModule]
-		}).compile();
+		})
+			.overrideProvider('DatabaseService')
+			.useClass(MockDatabaseService)
+			.compile();
 
 		app = moduleFixture.createNestApplication();
 		await app.init();
