@@ -105,7 +105,7 @@
 					></textarea>
 				</Card.Description>
 			</Card.Header>
-			<Label class="mt-4 mb-3 text-sm font-semibold text-muted-foreground">Actions</Label>
+			<Label class="mt-2 mb-3 text-sm font-semibold text-muted-foreground">Actions</Label>
 			<!-- ---------------------- -->
 			<!-- Actions related to the current guideline go here.  -->
 

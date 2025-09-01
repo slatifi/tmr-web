@@ -14,6 +14,6 @@
 <div
 	class="relative h-full bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:20px_20px]"
 >
-	<SelectGuideline bind:selectedGuideline guidelines={data?.guidelines} {guideline} />
+	<SelectGuideline bind:selectedGuideline guidelines={data?.guidelines} />
 	<GuidelineToolbar guideline={guideline()} />
 </div>
