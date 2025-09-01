@@ -39,11 +39,11 @@ jobs:
       - name: Create .env file
         run: echo "PUBLIC_API_BASE_URL=http://localhost:3000" > .env
 
-      - name: Build shared-types package
-        run: pnpm --filter @repo/shared-types build
-
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Build shared-types package
+        run: pnpm --filter @repo/shared-types build
 
       - name: Type check
         run: pnpm run check-types
