@@ -25,7 +25,7 @@
 		{
 			title: 'Guideline Builder',
 			icon: HammerIcon,
-			url: '/guideline'
+			url: '/builder'
 		}
 	];
 </script>

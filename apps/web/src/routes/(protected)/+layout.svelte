@@ -20,7 +20,7 @@
 				<span class="text-lg font-semibold">{page.data?.meta.title || 'TMR-W'}</span>
 			</div>
 		</header>
-		<div class="flex flex-col p-4">
+		<div class="flex h-full flex-col">
 			{@render children?.()}
 		</div>
 	</Sidebar.Inset>

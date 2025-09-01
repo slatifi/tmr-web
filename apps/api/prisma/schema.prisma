@@ -5,6 +5,13 @@ generator client {
   provider = "prisma-client-js"
 }
 
+generator zod {
+  provider                  = "pnpx zod-prisma-types"
+  output                    = "../../../packages/shared-types/src/zod"
+  createInputTypes          = false
+  createRelationValuesTypes = true
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")

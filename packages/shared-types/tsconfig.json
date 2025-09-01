@@ -3,7 +3,10 @@
 	"compilerOptions": {
 		"allowJs": true,
 		"outDir": "dist",
-		"rootDir": "src"
+		"rootDir": "src",
+		"module": "ESNext",
+		"moduleResolution": "Node",
+		"resolvePackageJsonExports": false
 	},
 	"include": ["src"],
 	"exclude": ["node_modules", "dist"]
