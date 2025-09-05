@@ -54,7 +54,7 @@
 	}
 </script>
 
-<Dialog.Root {open}>
+<Dialog.Root bind:open>
 	<Dialog.Content class="sm:max-w-lg">
 		<Dialog.Header>
 			<Dialog.Title class="text-lg leading-none font-medium">Create a new guideline</Dialog.Title>

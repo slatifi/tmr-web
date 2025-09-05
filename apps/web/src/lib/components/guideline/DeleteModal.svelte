@@ -9,13 +9,15 @@
 		resourceType,
 		resourceId,
 		resourceTitle,
-		onDelete
+		onDelete,
+		invalidationRoute = ''
 	}: {
 		open?: boolean;
 		resourceType: string;
 		resourceId?: number;
 		resourceTitle?: string;
 		onDelete?: () => void;
+		invalidationRoute?: string;
 	} = $props();
 
 	let loading = $state(false);
@@ -36,7 +38,7 @@
 				loading = false;
 				return;
 			}
-			invalidate(`app:${resourceType}s`);
+			invalidate(`app:${invalidationRoute || resourceType + 's'}`);
 			onDelete?.();
 			open = false;
 		} catch (err) {

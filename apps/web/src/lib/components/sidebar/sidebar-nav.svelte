@@ -14,7 +14,11 @@
 	<Sidebar.Menu>
 		{#each items as item (item.title)}
 			<Sidebar.MenuItem>
-				<Sidebar.MenuButton isActive={page.url.pathname === item.url}>
+				<Sidebar.MenuButton
+					isActive={item.matcher
+						? item.matcher.test(page.url.pathname)
+						: page.url.pathname === item.url}
+				>
 					{#snippet child({ props })}
 						<a href={item.url} {...props}>
 							<item.icon />

@@ -3,6 +3,7 @@ import { ContributionService } from './contribution.service';
 import { CreateContributionDto } from './dto/create-contribution.dto';
 import { UpdateContributionDto } from './dto/update-contribution.dto';
 import { ResourceOwnership } from '@/common/guards/resource-ownership.guard';
+import { CreateContributionWithTransitionDto } from './dto/create-contribution-with-transition.dto';
 
 @Controller('contribution')
 export class ContributionController {
@@ -16,6 +17,18 @@ export class ContributionController {
 	})
 	create(@Body() createContributionDto: CreateContributionDto) {
 		return this.contributionService.create(createContributionDto);
+	}
+
+	@Post('with-transition')
+	@ResourceOwnership({
+		resourceType: 'recommendation',
+		idParam: 'recommendationId',
+		nested: ['guideline']
+	})
+	createWithTransaction(
+		@Body() createContributionWithTransitionDto: CreateContributionWithTransitionDto
+	) {
+		return this.contributionService.createWithTransaction(createContributionWithTransitionDto);
 	}
 
 	@Get('all/:recommendationId')

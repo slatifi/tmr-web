@@ -104,11 +104,11 @@ export const QueryModeSchema = z.enum(['default', 'insensitive']);
 
 export const NullsOrderSchema = z.enum(['first', 'last']);
 
-export const DerivativeSchema = z.enum(['INCREASE', 'DECREASE', 'MAINTAIN']);
+export const DerivativeSchema = z.enum(['INCREASE', 'MAINTAIN', 'DECREASE']);
 
 export type DerivativeType = `${z.infer<typeof DerivativeSchema>}`;
 
-export const SituationSchema = z.enum(['NORMAL', 'HIGH', 'LOW', 'UNKNOWN']);
+export const SituationSchema = z.enum(['HIGH', 'NORMAL', 'LOW', 'UNKNOWN']);
 
 export type SituationType = `${z.infer<typeof SituationSchema>}`;
 

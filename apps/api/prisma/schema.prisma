@@ -96,13 +96,13 @@ model Transition {
 
 enum Derivative {
   INCREASE
-  DECREASE
   MAINTAIN
+  DECREASE
 }
 
 enum Situation {
-  NORMAL
   HIGH
+  NORMAL
   LOW
   UNKNOWN
 }

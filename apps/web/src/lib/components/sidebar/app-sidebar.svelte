@@ -25,7 +25,8 @@
 		{
 			title: 'Guideline Builder',
 			icon: HammerIcon,
-			url: '/builder'
+			url: '/builder',
+			matcher: /^\/builder(\/.*)?$/
 		}
 	];
 </script>

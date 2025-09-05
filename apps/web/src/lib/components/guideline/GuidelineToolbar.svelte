@@ -5,13 +5,32 @@
 	import { fade } from 'svelte/transition';
 	import { invalidate } from '$app/navigation';
 	import DeleteModal from './DeleteModal.svelte';
+	import type { Guideline, Recommendation } from '@repo/shared-types';
+	import { Separator } from '../ui/separator';
+	import CreateRecommendationModal from './CreateRecommendationModal.svelte';
+	import CreateContributionModal from './CreateContributionModal.svelte';
 
-	let { guideline } = $props();
+	interface Props {
+		guideline: Guideline | null;
+		ref: HTMLDivElement | null;
+		recommendationId: number | null;
+		recommendation: Recommendation | null;
+	}
+
+	let {
+		guideline,
+		ref = $bindable(null),
+		recommendationId = $bindable(null),
+		recommendation
+	}: Props = $props();
 
 	let tempTitle = $state('');
 	let tempDescription = $state('');
 	let error: string | null = $state(null);
-	let deleteOpen = $state(false);
+	let deleteGuidelineModalOpen = $state(false);
+	let createRecommendationModalOpen = $state(false);
+	let deleteRecommendationModalOpen = $state(false);
+	let createContributionModalOpen = $state(false);
 
 	let titleInput: HTMLInputElement | null = $state(null);
 	let descInput: HTMLTextAreaElement | null = $state(null);
@@ -25,12 +44,12 @@
 
 	function saveTitle() {
 		titleInput?.blur();
-		if (guideline.title !== tempTitle) onTitleOrDescriptionChange({ title: tempTitle });
+		if (guideline?.title !== tempTitle) onTitleOrDescriptionChange({ title: tempTitle });
 	}
 
 	function saveDescription() {
 		descInput?.blur();
-		if (guideline.description !== tempDescription)
+		if (guideline?.description !== tempDescription)
 			onTitleOrDescriptionChange({ description: tempDescription });
 	}
 
@@ -69,6 +88,7 @@
 	<div transition:fade>
 		<Card.Root
 			class="absolute bottom-2 left-2 flex w-84  max-w-[90vw] min-w-[250px] flex-col gap-0 p-4"
+			bind:ref
 		>
 			<Card.Header class="w-full gap-0 p-0">
 				<Card.Title
@@ -108,13 +128,54 @@
 			<Label class="mt-2 mb-3 text-sm font-semibold text-muted-foreground">Actions</Label>
 			<!-- ---------------------- -->
 			<!-- Actions related to the current guideline go here.  -->
-
+			{#if recommendationId}
+				<CreateContributionModal bind:open={createContributionModalOpen} {recommendationId} />
+				<Button
+					size="sm"
+					variant="outline"
+					class="mb-2 w-full"
+					onclick={() => (createContributionModalOpen = true)}>Add Contribution</Button
+				>
+				<DeleteModal
+					bind:open={deleteRecommendationModalOpen}
+					resourceType="recommendation"
+					resourceId={recommendationId}
+					resourceTitle={recommendation?.action}
+					invalidationRoute="guideline"
+					onDelete={() => (recommendationId = null)}
+				/>
+				<Button
+					variant="destructive"
+					size="sm"
+					onclick={() => (deleteRecommendationModalOpen = true)}
+					class="w-full">Delete Recommendation</Button
+				>
+				<Separator class="my-2" />
+			{:else}
+				<div class="mb-2 text-center text-sm text-muted-foreground italic">
+					Select a recommendation for more actions
+					<Separator class="my-2" />
+				</div>
+			{/if}
+			<Button
+				size="sm"
+				variant="outline"
+				class="mb-2 w-full"
+				onclick={() => (createRecommendationModalOpen = true)}>Add Recommendation</Button
+			>
+			<CreateRecommendationModal
+				bind:open={createRecommendationModalOpen}
+				guidelineId={guideline?.id}
+			/>
 			<!-- Delete button -->
-			<Button variant="destructive" size="sm" onclick={() => (deleteOpen = true)} class="w-full"
-				>Delete Guideline</Button
+			<Button
+				variant="destructive"
+				size="sm"
+				onclick={() => (deleteGuidelineModalOpen = true)}
+				class="w-full">Delete Guideline</Button
 			>
 			<DeleteModal
-				bind:open={deleteOpen}
+				bind:open={deleteGuidelineModalOpen}
 				resourceType="guideline"
 				resourceId={guideline?.id}
 				resourceTitle={guideline?.title}

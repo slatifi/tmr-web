@@ -3,6 +3,7 @@ import { CreateContributionDto } from './dto/create-contribution.dto';
 import { UpdateContributionDto } from './dto/update-contribution.dto';
 import { DatabaseService } from '@/database/database.service';
 import { Contribution } from './entities/contribution.entity';
+import { CreateContributionWithTransitionDto } from './dto/create-contribution-with-transition.dto';
 
 @Injectable()
 export class ContributionService {
@@ -12,6 +13,24 @@ export class ContributionService {
 		const contribution = await this.db.contribution.create({
 			data: createContributionDto
 		});
+		return new Contribution(contribution);
+	}
+
+	async createWithTransaction(
+		createContributionWithTransitionDto: CreateContributionWithTransitionDto
+	) {
+		const { value, recommendationId, ...transitionData } = createContributionWithTransitionDto;
+		const contribution = await this.db.contribution.create({
+			data: {
+				value,
+				recommendationId,
+				transition: {
+					create: { ...transitionData }
+				}
+			},
+			include: { transition: true }
+		});
+
 		return new Contribution(contribution);
 	}
 
