@@ -23,7 +23,8 @@
 	let loading = $state(false);
 	let error: string | null = $state(null);
 
-	async function handleDelete() {
+	async function handleDelete(e: Event) {
+		e.preventDefault();
 		if (!resourceId) return;
 		loading = true;
 		error = null;
@@ -38,9 +39,9 @@
 				loading = false;
 				return;
 			}
+			open = false;
 			invalidate(`app:${invalidationRoute || resourceType + 's'}`);
 			onDelete?.();
-			open = false;
 		} catch (err) {
 			error = 'An unexpected error occurred. Please try again.';
 			console.error(err);

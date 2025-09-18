@@ -2,7 +2,6 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Loader2Icon } from '@lucide/svelte';
 	import { Button } from '../ui/button';
-	import { Input } from '../ui/input';
 	import { Label } from '../ui/label';
 	import * as Select from '../ui/select';
 	import {
@@ -15,6 +14,7 @@
 	} from '@repo/shared-types';
 	import { invalidate } from '$app/navigation';
 	import { titleCase, validateDerivative } from './utils';
+	import SnomedSelect from './SnomedSelect.svelte';
 
 	let { open = $bindable(false), recommendationId } = $props();
 
@@ -41,7 +41,7 @@
 			newValidation.value = 'Valid value is required';
 		}
 		if (property.trim().length < 2) {
-			newValidation.property = 'Property must be at least 2 characters';
+			newValidation.property = 'Property must be a valid SNOMED code';
 		}
 		if (!derivative || !DerivativeSchema.safeParse(derivative).success) {
 			newValidation.derivative = 'Valid derivative is required';
@@ -141,13 +141,10 @@
 			</div>
 			<div class="grid gap-2">
 				<Label for="property">Property</Label>
-				<Input
-					id="property"
-					type="text"
+				<SnomedSelect
 					bind:value={property}
 					placeholder="Property"
 					class="w-full text-sm"
-					required
 					disabled={loading}
 				/>
 				{#if validation.property}

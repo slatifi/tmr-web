@@ -7,9 +7,10 @@
 		recommendation: RecommendationWithRelations;
 		i: number;
 		selected: number | null;
+		snomedDisplayMap: Record<string, string>;
 	}
 
-	let { recommendation, i = 0, selected = $bindable(null) }: Props = $props();
+	let { recommendation, i = 0, selected = $bindable(null), snomedDisplayMap }: Props = $props();
 
 	let deleteContributionOpen = $state(false);
 	let selectedContributionId: number | null = $state(null);
@@ -52,7 +53,7 @@
 			</div>
 
 			<div class="text-center text-sm font-medium text-gray-800">
-				{recommendation.action}
+				{snomedDisplayMap[recommendation.action] || recommendation.action}
 			</div>
 		</div>
 
@@ -75,7 +76,8 @@
 									{/if}
 									C{i + 1}.{ci + 1}:
 									{contribution.transition.derivative.toLowerCase()}
-									{contribution.transition.property}
+									{snomedDisplayMap[contribution.transition.property] ||
+										contribution.transition.property}
 								</div>
 								<div class="flex items-center gap-2 text-xs">
 									<span class="font-medium text-gray-700">{contribution.transition.pre}</span>
@@ -99,7 +101,11 @@
 				bind:open={deleteContributionOpen}
 				resourceType="contribution"
 				resourceId={selectedContributionId || undefined}
-				resourceTitle={`${selectedContribution?.transition?.derivative.toLowerCase()} ${selectedContribution?.transition?.property}`}
+				resourceTitle={`${selectedContribution?.transition?.derivative.toLowerCase()} ${
+					(selectedContribution?.transition?.property &&
+						snomedDisplayMap[selectedContribution?.transition?.property]) ||
+					selectedContribution?.transition?.property
+				}`}
 				invalidationRoute="guideline"
 			/>
 		{/if}

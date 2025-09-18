@@ -3,25 +3,28 @@
 	import { Button } from '$lib/components/ui/button';
 	import Label from '../ui/label/label.svelte';
 	import { fade } from 'svelte/transition';
-	import { invalidate } from '$app/navigation';
+	import { goto, invalidate } from '$app/navigation';
 	import DeleteModal from './DeleteModal.svelte';
 	import type { Guideline, Recommendation } from '@repo/shared-types';
 	import { Separator } from '../ui/separator';
 	import CreateRecommendationModal from './CreateRecommendationModal.svelte';
 	import CreateContributionModal from './CreateContributionModal.svelte';
+	import { tick } from 'svelte';
 
 	interface Props {
 		guideline: Guideline | null;
 		ref: HTMLDivElement | null;
 		recommendationId: number | null;
 		recommendation: Recommendation | null;
+		snomedDisplayMap: Record<string, string>;
 	}
 
 	let {
 		guideline,
 		ref = $bindable(null),
 		recommendationId = $bindable(null),
-		recommendation
+		recommendation,
+		snomedDisplayMap
 	}: Props = $props();
 
 	let tempTitle = $state('');
@@ -82,6 +85,13 @@
 			invalidate('app:guidelines');
 		}
 	}
+
+	async function handleDeleteGuideline() {
+		guideline = null;
+		recommendationId = null;
+		await tick(); // wait for DOM update
+		goto('/builder', { replaceState: true });
+	}
 </script>
 
 {#if guideline}
@@ -140,7 +150,8 @@
 					bind:open={deleteRecommendationModalOpen}
 					resourceType="recommendation"
 					resourceId={recommendationId}
-					resourceTitle={recommendation?.action}
+					resourceTitle={(recommendation.action && snomedDisplayMap[recommendation.action]) ||
+						'Recommendation'}
 					invalidationRoute="guideline"
 					onDelete={() => (recommendationId = null)}
 				/>
@@ -179,7 +190,7 @@
 				resourceType="guideline"
 				resourceId={guideline?.id}
 				resourceTitle={guideline?.title}
-				onDelete={() => (guideline = null)}
+				onDelete={handleDeleteGuideline}
 			/>
 		</Card.Root>
 	</div>

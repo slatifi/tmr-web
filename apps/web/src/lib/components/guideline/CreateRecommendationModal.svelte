@@ -2,7 +2,6 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Loader2Icon } from '@lucide/svelte';
 	import { Button } from '../ui/button';
-	import { Input } from '../ui/input';
 	import { Label } from '../ui/label';
 	import * as Select from '../ui/select';
 	import {
@@ -11,6 +10,7 @@
 	} from '@repo/shared-types';
 	import { invalidate } from '$app/navigation';
 	import { titleCase } from './utils';
+	import SnomedSelect from './SnomedSelect.svelte';
 
 	let { open = $bindable(false), guidelineId } = $props();
 
@@ -23,7 +23,7 @@
 
 	async function handleSubmit() {
 		if (action.trim().length < 3) {
-			validation = { action: 'Action must be greater than 3 characters' };
+			validation = { action: 'Action must be a valid SNOMED code' };
 			return;
 		}
 
@@ -79,13 +79,10 @@
 		<form class="grid gap-4 py-4">
 			<div class="grid gap-2">
 				<Label for="action">Action</Label>
-				<Input
-					id="action"
-					type="text"
+				<SnomedSelect
 					bind:value={action}
-					placeholder="Recommendation action (e.g., take Ibuprofen)"
+					placeholder="Recommendation action (e.g., Ibuprofen)"
 					class="w-full text-sm"
-					required
 					disabled={loading}
 				/>
 				{#if validation.action}

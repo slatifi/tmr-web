@@ -32,13 +32,16 @@
 <Card.Root class="absolute top-2 left-2 w-84 gap-4 p-4">
 	<CreateModal bind:open={createModalOpen} {handleCreation} />
 	<Card.Header class="p-0">
-		<Card.Title class="text-secondary-foreground ">Guideline</Card.Title>
+		<Card.Title class="text-secondary-foreground">Guideline</Card.Title>
 		<Card.Description>Please select a guideline to continue</Card.Description>
 	</Card.Header>
 	<Card.Content class="px-0">
 		<form>
 			<Select.Root type="single" bind:value={selectedGuideline}>
-				<Select.Trigger class="w-full">{guidelineName}</Select.Trigger>
+				<Select.Trigger
+					class="w-full {selectedGuideline ? 'text-secondary-foreground' : 'text-muted-foreground'}"
+					>{guidelineName}</Select.Trigger
+				>
 				<Select.Content>
 					{#await guidelines}
 						<Select.Item value="loading" disabled>

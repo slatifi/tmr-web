@@ -28,6 +28,7 @@
 			data.guideline?.id.toString() !== selectedGuideline &&
 			data?.guidelines?.some((g) => g.id.toString() === selectedGuideline)
 		) {
+			selectedRecommendation = null;
 			goto(`/builder/${selectedGuideline}`);
 		}
 	});
@@ -51,6 +52,7 @@
 		bind:ref={toolbarRef}
 		bind:recommendationId={selectedRecommendation}
 		{recommendation}
+		snomedDisplayMap={data.snomedDisplayMap}
 	/>
 	{#if data.guideline}
 		<div style:margin-left={toolbarRef?.clientWidth + 'px'} class="h-full p-4 pl-6">
@@ -62,6 +64,7 @@
 							recommendation={rec}
 							i={2 * i}
 							bind:selected={selectedRecommendation}
+							snomedDisplayMap={data.snomedDisplayMap}
 						/>
 					{/each}
 				</div>
@@ -73,6 +76,7 @@
 							recommendation={rec}
 							i={2 * i + 1}
 							bind:selected={selectedRecommendation}
+							snomedDisplayMap={data.snomedDisplayMap}
 						/>
 					{/each}
 				</div>
