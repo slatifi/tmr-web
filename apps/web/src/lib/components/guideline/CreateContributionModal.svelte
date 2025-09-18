@@ -1,9 +1,9 @@
 <script lang="ts">
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Loader2Icon } from '@lucide/svelte';
-	import { Button } from '../ui/button';
-	import { Label } from '../ui/label';
-	import * as Select from '../ui/select';
+	import { Button } from '$lib/components/ui/button';
+	import { Label } from '$lib/components/ui/label';
+	import * as Select from '$lib/components/ui/select';
 	import {
 		ContributionValueSchema,
 		type ContributionValueType,
@@ -13,7 +13,7 @@
 		type SituationType
 	} from '@repo/shared-types';
 	import { invalidate } from '$app/navigation';
-	import { titleCase, validateDerivative } from './utils';
+	import { titleCase, calculateDerivative } from './utils';
 	import SnomedSelect from './SnomedSelect.svelte';
 
 	let { open = $bindable(false), recommendationId } = $props();
@@ -23,6 +23,20 @@
 	let derivative: DerivativeType | '' = $state('');
 	let preSituation: SituationType | '' = $state('');
 	let postSituation: SituationType | '' = $state('');
+
+	// Whether the derivative should be calculated automatically
+	let canCalculateDerivative = $derived(
+		preSituation &&
+			postSituation &&
+			preSituation !== SituationSchema.enum.UNKNOWN &&
+			postSituation !== SituationSchema.enum.UNKNOWN
+	);
+
+	// If calculateDerivative is true, automatically set the derivative based on situations
+	$effect(() => {
+		if (canCalculateDerivative && preSituation && postSituation)
+			derivative = calculateDerivative(preSituation, postSituation);
+	});
 
 	let loading: boolean = $state(false);
 	let validation: {
@@ -51,15 +65,6 @@
 		}
 		if (!postSituation || !SituationSchema.safeParse(postSituation).success) {
 			newValidation.postSituation = 'Valid post-situation is required';
-		}
-
-		if (
-			derivative &&
-			preSituation &&
-			postSituation &&
-			!validateDerivative(derivative, preSituation, postSituation)
-		) {
-			newValidation.derivative = `Derivative "${titleCase(derivative)}" is not valid for the selected situations`;
 		}
 
 		validation = newValidation;
@@ -153,7 +158,11 @@
 			</div>
 			<div class="grid gap-2">
 				<Label for="derivative">Derivative</Label>
-				<Select.Root type="single" bind:value={derivative} disabled={loading}>
+				<Select.Root
+					type="single"
+					bind:value={derivative}
+					disabled={canCalculateDerivative || loading}
+				>
 					<Select.Trigger id="derivative" class="w-full" placeholder="Select derivative">
 						{#if derivative}
 							{titleCase(DerivativeSchema.parse(derivative))}

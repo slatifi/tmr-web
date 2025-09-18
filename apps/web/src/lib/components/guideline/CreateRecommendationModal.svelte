@@ -1,20 +1,23 @@
 <script lang="ts">
-	import * as Dialog from '$lib/components/ui/dialog';
 	import { Loader2Icon } from '@lucide/svelte';
-	import { Button } from '../ui/button';
-	import { Label } from '../ui/label';
-	import * as Select from '../ui/select';
+	import * as Dialog from '$lib/components/ui/dialog';
+	import { Button } from '$lib/components/ui/button';
+	import { Label } from '$lib/components/ui/label';
+	import { Input } from '$lib/components/ui/input';
+	import * as Select from '$lib/components/ui/select';
+	import SnomedSelect from './SnomedSelect.svelte';
+
 	import {
 		RecommendationStrengthSchema,
 		type RecommendationStrengthType
 	} from '@repo/shared-types';
 	import { invalidate } from '$app/navigation';
 	import { titleCase } from './utils';
-	import SnomedSelect from './SnomedSelect.svelte';
 
 	let { open = $bindable(false), guidelineId } = $props();
 
 	let action = $state('');
+	let actionPrefix = $state('');
 	let strength: RecommendationStrengthType | '' = $state('');
 
 	let loading: boolean = $state(false);
@@ -22,13 +25,16 @@
 	let error: string | null = $state(null);
 
 	async function handleSubmit() {
+		validation = {};
 		if (action.trim().length < 3) {
-			validation = { action: 'Action must be a valid SNOMED code' };
-			return;
+			validation = { ...validation, action: 'Action must be a valid SNOMED code' };
 		}
 
 		if (!strength || !RecommendationStrengthSchema.safeParse(strength).success) {
-			validation = { strength: 'Valid strength is required' };
+			validation = { ...validation, strength: 'Valid strength is required' };
+		}
+
+		if (Object.keys(validation).length > 0) {
 			return;
 		}
 
@@ -88,6 +94,15 @@
 				{#if validation.action}
 					<p class="text-sm text-destructive">{validation.action}</p>
 				{/if}
+			</div>
+			<div class="grid gap-2">
+				<Label for="action">Action prefix (optional)</Label>
+				<Input
+					bind:value={actionPrefix}
+					placeholder="Action prefix (e.g., Take, Administer)"
+					class="w-full text-sm"
+					disabled={loading}
+				/>
 			</div>
 			<div class="grid gap-2">
 				<Label for="Strength">Strength</Label>

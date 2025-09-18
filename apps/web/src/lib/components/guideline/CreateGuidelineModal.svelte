@@ -1,9 +1,9 @@
 <script lang="ts">
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Loader2Icon } from '@lucide/svelte';
-	import { Button } from '../ui/button';
-	import { Input } from '../ui/input';
-	import { Label } from '../ui/label';
+	import { Button } from '$lib/components/ui/button';
+	import { Input } from '$lib/components/ui/input';
+	import { Label } from '$lib/components/ui/label';
 
 	let { open = $bindable(false), handleCreation } = $props();
 

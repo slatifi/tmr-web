@@ -1,27 +1,10 @@
-import {
-	PUBLIC_SNOMED_AUTH_URL,
-	PUBLIC_SNOMED_BASE_URL,
-	PUBLIC_SNOMED_CLIENT_ID,
-	PUBLIC_SNOMED_CLIENT_SECRET
-} from '$env/static/public';
-import { SvelteURLSearchParams } from 'svelte/reactivity';
+import { PUBLIC_SNOMED_BASE_URL } from '$env/static/public';
 
 let snomedToken: string = $state('');
 
 export async function getSnomedToken(): Promise<string> {
-	// TODO: Move auth token to server to avoid exposing client secret
 	if (!snomedToken) {
-		const res = await fetch(PUBLIC_SNOMED_AUTH_URL, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/x-www-form-urlencoded'
-			},
-			body: new SvelteURLSearchParams({
-				grant_type: 'client_credentials',
-				client_id: PUBLIC_SNOMED_CLIENT_ID,
-				client_secret: PUBLIC_SNOMED_CLIENT_SECRET
-			})
-		});
+		const res = await fetch('/api/snomed/auth');
 		const data = await res.json();
 		snomedToken = data.access_token;
 		const expiresIn = data.expires_in; // in seconds

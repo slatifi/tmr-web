@@ -1,12 +1,12 @@
 <script lang="ts">
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
-	import Label from '../ui/label/label.svelte';
+	import Label from '$lib/components/ui/label/label.svelte';
 	import { fade } from 'svelte/transition';
 	import { goto, invalidate } from '$app/navigation';
 	import DeleteModal from './DeleteModal.svelte';
 	import type { Guideline, Recommendation } from '@repo/shared-types';
-	import { Separator } from '../ui/separator';
+	import { Separator } from '$lib/components/ui/separator';
 	import CreateRecommendationModal from './CreateRecommendationModal.svelte';
 	import CreateContributionModal from './CreateContributionModal.svelte';
 	import { tick } from 'svelte';
@@ -150,7 +150,7 @@
 					bind:open={deleteRecommendationModalOpen}
 					resourceType="recommendation"
 					resourceId={recommendationId}
-					resourceTitle={(recommendation.action && snomedDisplayMap[recommendation.action]) ||
+					resourceTitle={(recommendation && snomedDisplayMap[recommendation.action]) ||
 						'Recommendation'}
 					invalidationRoute="guideline"
 					onDelete={() => (recommendationId = null)}

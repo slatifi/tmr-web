@@ -85,6 +85,7 @@ export const RecommendationScalarFieldEnumSchema = z.enum([
 	'createdAt',
 	'updatedAt',
 	'action',
+	'actionPrefix',
 	'strength',
 	'guidelineId'
 ]);
@@ -318,6 +319,7 @@ export const RecommendationSchema = z.object({
 	createdAt: z.coerce.date(),
 	updatedAt: z.coerce.date(),
 	action: z.string(),
+	actionPrefix: z.string().nullable(),
 	guidelineId: z.number().int()
 });
 

@@ -53,6 +53,9 @@
 			</div>
 
 			<div class="text-center text-sm font-medium text-gray-800">
+				{#if recommendation.actionPrefix}
+					{`${recommendation.actionPrefix} `}
+				{/if}
 				{snomedDisplayMap[recommendation.action] || recommendation.action}
 			</div>
 		</div>

@@ -1,8 +1,8 @@
 import {
 	DerivativeSchema,
-	type DerivativeType,
 	SituationSchema,
-	type SituationType
+	type SituationType,
+	type DerivativeType
 } from '@repo/shared-types';
 
 export function titleCase(str: string): string {
@@ -13,28 +13,20 @@ export function titleCase(str: string): string {
 		.join(' ');
 }
 
-export function validateDerivative(
-	derivative: DerivativeType,
-	pre: SituationType,
-	post: SituationType
-): boolean {
-	if (pre === SituationSchema.enum.UNKNOWN || post === SituationSchema.enum.UNKNOWN) {
-		return true;
-	}
-
+export function calculateDerivative(pre: SituationType, post: SituationType): DerivativeType | '' {
 	// Check that the derivative is valid based on the pre and post situations
 	// For example, if pre is 'NORMAL' and post is 'HIGH', the derivative must be 'INCREASE'
 	const situations = SituationSchema.options;
 	const preIndex = situations.indexOf(pre);
 	const postIndex = situations.indexOf(post);
 
-	if (preIndex < postIndex && derivative !== DerivativeSchema.enum.DECREASE) {
-		return false;
-	} else if (preIndex > postIndex && derivative !== DerivativeSchema.enum.INCREASE) {
-		return false;
-	} else if (preIndex === postIndex && derivative !== DerivativeSchema.enum.MAINTAIN) {
-		return false;
+	if (preIndex < postIndex) {
+		return DerivativeSchema.enum.DECREASE;
+	} else if (preIndex > postIndex) {
+		return DerivativeSchema.enum.INCREASE;
+	} else if (preIndex === postIndex) {
+		return DerivativeSchema.enum.MAINTAIN;
 	}
 
-	return true;
+	return '';
 }
