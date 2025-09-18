@@ -4,6 +4,7 @@ import { Recommendation } from '@/cig/recommendation/entities/recommendation.ent
 export const recommendationStub = {
 	id: 1,
 	action: 'Test Action',
+	actionPrefix: 'Take',
 	strength: 'SHOULD',
 	guidelineId: 2,
 	createdAt: new Date(),

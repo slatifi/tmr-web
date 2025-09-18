@@ -7,13 +7,15 @@ import { AuthModule, AuthGuard } from '@thallesp/nestjs-better-auth';
 import { auth } from './auth';
 import { DatabaseModule } from './database/database.module';
 import { CigModule } from './cig/cig.module';
+import { SnomedModule } from './snomed/snomed.module';
 
 @Module({
 	imports: [
 		ConfigModule.forRoot({ isGlobal: true }),
 		AuthModule.forRoot(auth),
 		DatabaseModule,
-		CigModule
+		CigModule,
+		SnomedModule
 	],
 	controllers: [AppController],
 	providers: [AppService, { provide: 'APP_GUARD', useClass: AuthGuard }]

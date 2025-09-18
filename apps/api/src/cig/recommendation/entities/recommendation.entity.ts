@@ -11,6 +11,7 @@ export class Recommendation implements RecommendationModel {
 	createdAt: Date;
 	updatedAt: Date;
 	action: string;
+	actionPrefix: string | null;
 	guidelineId: number;
 
 	@ApiProperty({ enum: RecommendationStrength })

@@ -1,10 +1,12 @@
 import { IsString, IsNotEmpty, IsEnum, IsInt } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Derivative, Situation } from '@prisma/client';
+import { IsSnomedCode } from '@/common/validation/is-snomed-code.decorator';
 
 export class CreateTransitionDto {
 	@IsString()
 	@IsNotEmpty()
+	@IsSnomedCode()
 	property: string;
 
 	@IsEnum(Situation)

@@ -85,7 +85,7 @@ model Transition {
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
   derivative     Derivative
-  property       String // TODO: Use a stricter type for properties
+  property       String // A SNOMED CT code
   pre            Situation
   post           Situation
   contribution   Contribution @relation(fields: [contributionId], references: [id], onDelete: Cascade)
@@ -129,7 +129,8 @@ model Recommendation {
   id            Int                    @id @default(autoincrement())
   createdAt     DateTime               @default(now())
   updatedAt     DateTime               @updatedAt
-  action        String // TODO: Use a stricter type for actions
+  action        String // A SNOMED CT code
+  actionPrefix  String?
   strength      RecommendationStrength
   contributions Contribution[]
   guideline     Guideline              @relation(fields: [guidelineId], references: [id], onDelete: Cascade)
