@@ -139,31 +139,36 @@
 			<!-- ---------------------- -->
 			<!-- Actions related to the current guideline go here.  -->
 			{#if recommendationId}
-				<CreateContributionModal bind:open={createContributionModalOpen} {recommendationId} />
-				<Button
-					size="sm"
-					variant="outline"
-					class="mb-2 w-full"
-					onclick={() => (createContributionModalOpen = true)}>Add Contribution</Button
-				>
-				<DeleteModal
-					bind:open={deleteRecommendationModalOpen}
-					resourceType="recommendation"
-					resourceId={recommendationId}
-					resourceTitle={(recommendation && snomedDisplayMap[recommendation.action]) ||
-						'Recommendation'}
-					invalidationRoute="guideline"
-					onDelete={() => (recommendationId = null)}
-				/>
-				<Button
-					variant="destructive"
-					size="sm"
-					onclick={() => (deleteRecommendationModalOpen = true)}
-					class="w-full">Delete Recommendation</Button
-				>
-				<Separator class="my-2" />
+				<div in:fade={{ duration: 800 }}>
+					<CreateContributionModal bind:open={createContributionModalOpen} {recommendationId} />
+					<Button
+						size="sm"
+						variant="outline"
+						class="mb-2 w-full"
+						onclick={() => (createContributionModalOpen = true)}>Add Contribution</Button
+					>
+					<DeleteModal
+						bind:open={deleteRecommendationModalOpen}
+						resourceType="recommendation"
+						resourceId={recommendationId}
+						resourceTitle={(recommendation && snomedDisplayMap[recommendation.action]) ||
+							'Recommendation'}
+						invalidationRoute="guideline"
+						onDelete={() => (recommendationId = null)}
+					/>
+					<Button
+						variant="destructive"
+						size="sm"
+						onclick={() => (deleteRecommendationModalOpen = true)}
+						class="w-full">Delete Recommendation</Button
+					>
+					<Separator class="my-2" />
+				</div>
 			{:else}
-				<div class="mb-2 text-center text-sm text-muted-foreground italic">
+				<div
+					in:fade={{ duration: 800 }}
+					class="mb-2 text-center text-sm text-muted-foreground italic"
+				>
 					Select a recommendation for more actions
 					<Separator class="my-2" />
 				</div>

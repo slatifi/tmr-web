@@ -51,7 +51,7 @@
 	}
 </script>
 
-<Dialog.Root {open}>
+<Dialog.Root bind:open>
 	<Dialog.Overlay class="fixed inset-0 bg-black/50" />
 	<Dialog.Content class="sm:max-w-lg">
 		<Dialog.Header>

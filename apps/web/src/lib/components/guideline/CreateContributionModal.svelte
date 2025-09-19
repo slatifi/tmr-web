@@ -157,30 +157,6 @@
 				{/if}
 			</div>
 			<div class="grid gap-2">
-				<Label for="derivative">Derivative</Label>
-				<Select.Root
-					type="single"
-					bind:value={derivative}
-					disabled={canCalculateDerivative || loading}
-				>
-					<Select.Trigger id="derivative" class="w-full" placeholder="Select derivative">
-						{#if derivative}
-							{titleCase(DerivativeSchema.parse(derivative))}
-						{:else}
-							Select derivative
-						{/if}
-					</Select.Trigger>
-					<Select.Content>
-						{#each Object.values(DerivativeSchema.enum) as option (option)}
-							<Select.Item class="capitalize" value={option}>{titleCase(option)}</Select.Item>
-						{/each}
-					</Select.Content>
-				</Select.Root>
-				{#if validation.derivative}
-					<p class="text-sm text-destructive">{validation.derivative}</p>
-				{/if}
-			</div>
-			<div class="grid gap-2">
 				<Label for="preSituation">Pre-situation</Label>
 				<Select.Root type="single" bind:value={preSituation} disabled={loading}>
 					<Select.Trigger id="preSituation" class="w-full" placeholder="Select pre-situation">
@@ -218,6 +194,30 @@
 				</Select.Root>
 				{#if validation.postSituation}
 					<p class="text-sm text-destructive">{validation.postSituation}</p>
+				{/if}
+			</div>
+			<div class="grid gap-2">
+				<Label for="derivative">Derivative</Label>
+				<Select.Root
+					type="single"
+					bind:value={derivative}
+					disabled={canCalculateDerivative || loading}
+				>
+					<Select.Trigger id="derivative" class="w-full" placeholder="Select derivative">
+						{#if derivative}
+							{titleCase(DerivativeSchema.parse(derivative))}
+						{:else}
+							Select derivative
+						{/if}
+					</Select.Trigger>
+					<Select.Content>
+						{#each Object.values(DerivativeSchema.enum) as option (option)}
+							<Select.Item class="capitalize" value={option}>{titleCase(option)}</Select.Item>
+						{/each}
+					</Select.Content>
+				</Select.Root>
+				{#if validation.derivative}
+					<p class="text-sm text-destructive">{validation.derivative}</p>
 				{/if}
 			</div>
 		</form>
