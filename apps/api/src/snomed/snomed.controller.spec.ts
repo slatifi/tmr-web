@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { SnomedController } from './snomed.controller';
 
 describe('SnomedController', () => {

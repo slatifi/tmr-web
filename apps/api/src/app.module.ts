@@ -8,6 +8,7 @@ import { auth } from './auth';
 import { DatabaseModule } from './database/database.module';
 import { CigModule } from './cig/cig.module';
 import { SnomedModule } from './snomed/snomed.module';
+import { InteractionModule } from './interaction/interaction.module';
 
 @Module({
 	imports: [
@@ -15,7 +16,8 @@ import { SnomedModule } from './snomed/snomed.module';
 		AuthModule.forRoot(auth),
 		DatabaseModule,
 		CigModule,
-		SnomedModule
+		SnomedModule,
+		InteractionModule
 	],
 	controllers: [AppController],
 	providers: [AppService, { provide: 'APP_GUARD', useClass: AuthGuard }]
