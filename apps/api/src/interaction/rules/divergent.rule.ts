@@ -4,13 +4,13 @@ import { EncodedData, InteractionRule, InteractionVariables } from '../interacti
 import { InteractionService } from '../interaction.service';
 
 @Injectable()
-export class ContradictionInteractionRule implements InteractionRule {
-	readonly type = 'contradiction';
+export class DivergentInteractionRule implements InteractionRule {
+	readonly type = 'divergent';
 	readonly entity = 'contribution';
 
 	define(z3: Context, solver: Solver, vars: InteractionVariables, data: EncodedData) {
 		const { i1, i2 } = vars;
-		// Add constraint for repetition: same recommendation index but different guidelines
+
 		const {
 			guidelineIdFunc,
 			strengthFunc,
@@ -26,9 +26,15 @@ export class ContradictionInteractionRule implements InteractionRule {
 		const i2Rec = z3.Eq(contribRecIdFunc.call(i2), r2);
 		const sameRec = z3.Not(z3.Eq(r1, r2));
 		const differentContribs = z3.Not(z3.Eq(i1, i2));
+
+		// both contributions should come from different recommendations with the same action
 		const sameAction = z3.Eq(actionFunc.call(r1), actionFunc.call(r2));
+
+		// contributions should have the same property but different derivatives
 		const sameProperty = z3.Eq(propertyFunc.call(i1), propertyFunc.call(i2));
 		const differentDerivatives = z3.Not(z3.Eq(derivativeFunc.call(i1), derivativeFunc.call(i2)));
+
+		// both recommendations should have SHOULD strength
 		const r1Strength = z3.Eq(strengthFunc.call(r1), InteractionService.strengthMap.SHOULD);
 		const r2Strength = z3.Eq(strengthFunc.call(r2), InteractionService.strengthMap.SHOULD);
 		const sameGuideline = z3.Eq(guidelineIdFunc.call(r1), guidelineIdFunc.call(r2));

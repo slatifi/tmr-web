@@ -13,7 +13,12 @@ import { ContributionWithTransition } from '@/cig/contribution/contribution.inte
 import { Context, Solver, init } from 'z3-solver';
 import { InteractingPair, InteractionResult, InteractionRule } from './interaction-rule.interface';
 import { RepetitionInteractionRule } from './rules/repetition.rule';
-import { ContradictionInteractionRule } from './rules/contradiction.rule';
+import { RecommendationContradictionInteractionRule } from './rules/recommendation_contradiction.rule';
+import { ContributionContradictionInteractionRule } from './rules/contribution_contradiction.rule';
+import { DivergentInteractionRule } from './rules/divergent.rule';
+import { AlternativeInteractionRule } from './rules/alternative.rule';
+import { RepairableInteractionRule } from './rules/repairable.rule';
+import { SideEffectInteractionRule } from './rules/side_effect.rule';
 
 @Injectable()
 export class InteractionService {
@@ -33,10 +38,20 @@ export class InteractionService {
 
 	constructor(
 		private readonly repetitionRule: RepetitionInteractionRule,
-		private readonly contradictionRule: ContradictionInteractionRule
+		private readonly recommendationContradictionRule: RecommendationContradictionInteractionRule,
+		private readonly contributionContradictionRule: ContributionContradictionInteractionRule,
+		private readonly divergentRule: DivergentInteractionRule,
+		private readonly alternativeRule: AlternativeInteractionRule,
+		private readonly repairableRule: RepairableInteractionRule,
+		private readonly sideEffectRule: SideEffectInteractionRule
 	) {
 		this.rules.set(this.repetitionRule.type, repetitionRule);
-		this.rules.set(this.contradictionRule.type, contradictionRule);
+		this.rules.set(this.recommendationContradictionRule.type, recommendationContradictionRule);
+		this.rules.set(this.contributionContradictionRule.type, contributionContradictionRule);
+		this.rules.set(this.divergentRule.type, divergentRule);
+		this.rules.set(this.alternativeRule.type, alternativeRule);
+		this.rules.set(this.repairableRule.type, repairableRule);
+		this.rules.set(this.sideEffectRule.type, sideEffectRule);
 	}
 
 	async findAll(guidelines: ExpandedGuideline[]): Promise<InteractionResult> {
