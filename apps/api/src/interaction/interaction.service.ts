@@ -307,6 +307,8 @@ export class InteractionService {
 			const model = solver.model();
 			if (!model) break;
 
+			let blockSymmetric = true;
+
 			const i1Val = Number(model.get(i1).toString());
 			const i2Val = Number(model.get(i2).toString());
 
@@ -320,7 +322,13 @@ export class InteractionService {
 						const actionA = recommendations.find((r) => r.id === contrib1.recommendationId)?.action;
 						const actionB = recommendations.find((r) => r.id === contrib2.recommendationId)?.action;
 						const valid = await this.handleActionCheck(actionChecks, actionA!, actionB!);
-						if (valid) pairs.push({ entity: 'contribution', id1: contrib1.id, id2: contrib2.id });
+
+						if (valid) {
+							pairs.push({ entity: 'contribution', id1: contrib1.id, id2: contrib2.id });
+						} else {
+							// If action check fails, do not block the symmetric case as it may be valid
+							blockSymmetric = false;
+						}
 					} else {
 						pairs.push({ entity: 'contribution', id1: contrib1.id, id2: contrib2.id });
 					}
@@ -333,7 +341,13 @@ export class InteractionService {
 					// If action checks are defined, verify them
 					if (actionChecks) {
 						const valid = await this.handleActionCheck(actionChecks, rec1.action, rec2.action);
-						if (valid) pairs.push({ entity: 'recommendation', id1: rec1.id, id2: rec2.id });
+
+						if (valid) {
+							pairs.push({ entity: 'recommendation', id1: rec1.id, id2: rec2.id });
+						} else {
+							// If action check fails, do not block the symmetric case as it may be valid
+							blockSymmetric = false;
+						}
 					} else {
 						pairs.push({ entity: 'recommendation', id1: rec1.id, id2: rec2.id });
 					}
@@ -343,6 +357,9 @@ export class InteractionService {
 			// BLOCKING CLAUSE
 			// Add constraint to block this model in the next iteration
 			solver.add(z3.Not(z3.And(z3.Eq(i1, z3.Int.val(i1Val)), z3.Eq(i2, z3.Int.val(i2Val)))));
+			if (blockSymmetric) {
+				solver.add(z3.Not(z3.And(z3.Eq(i1, z3.Int.val(i2Val)), z3.Eq(i2, z3.Int.val(i1Val)))));
+			}
 		}
 		return pairs;
 	}
