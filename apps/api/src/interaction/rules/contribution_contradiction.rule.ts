@@ -11,21 +11,13 @@ export class ContributionContradictionInteractionRule implements InteractionRule
 	define(z3: Context, solver: Solver, vars: InteractionVariables, data: EncodedData) {
 		const { i1, i2 } = vars;
 		// Add constraint for repetition: same recommendation index but different guidelines
-		const {
-			guidelineIdFunc,
-			strengthFunc,
-			contribRecIdFunc,
-			propertyFunc,
-			derivativeFunc,
-			valueFunc
-		} = data;
+		const { strengthFunc, contribRecIdFunc, propertyFunc, derivativeFunc, valueFunc } = data;
 
 		const r1 = z3.Int.const('r1');
 		const r2 = z3.Int.const('r2');
 		const i1Rec = z3.Eq(contribRecIdFunc.call(i1), r1);
 		const i2Rec = z3.Eq(contribRecIdFunc.call(i2), r2);
 		const differentContribs = z3.Not(z3.Eq(i1, i2));
-		const sameGuideline = z3.Eq(guidelineIdFunc.call(r1), guidelineIdFunc.call(r2));
 
 		// r1 should have SHOULD strength and the contribution i1 should be positive or neutral
 		const r1Strength = z3.Eq(strengthFunc.call(r1), InteractionService.strengthMap.SHOULD);
@@ -57,17 +49,6 @@ export class ContributionContradictionInteractionRule implements InteractionRule
 			z3.And(differentDerivatives, i2ValuePostitive)
 		);
 
-		solver.add(
-			z3.And(
-				i1Rec,
-				i2Rec,
-				differentContribs,
-				sameProperty,
-				r1Strength,
-				i1Value,
-				values,
-				sameGuideline
-			)
-		);
+		solver.add(z3.And(i1Rec, i2Rec, differentContribs, sameProperty, r1Strength, i1Value, values));
 	}
 }
