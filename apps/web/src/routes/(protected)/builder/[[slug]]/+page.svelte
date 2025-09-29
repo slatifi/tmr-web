@@ -54,33 +54,41 @@
 		{recommendation}
 		snomedDisplayMap={data.snomedDisplayMap}
 	/>
-	{#if data.guideline}
-		<div style:margin-left={toolbarRef?.clientWidth + 'px'} class="h-full p-4 pl-6">
-			<div class="grid max-w-6xl grid-cols-2 gap-20">
-				<!-- Left Column -->
-				<div class="ml-auto w-fit">
-					{#each leftColumnRecs as rec, i (rec.id)}
-						<GuidelineRecommendation
-							recommendation={rec}
-							i={2 * i}
-							bind:selected={selectedRecommendation}
-							snomedDisplayMap={data.snomedDisplayMap}
-						/>
-					{/each}
-				</div>
+	{#key data.guideline}
+		{#if data.guideline}
+			<div style:margin-left={toolbarRef?.clientWidth + 'px'} class="h-full p-4 pl-6">
+				<div class="grid max-w-6xl grid-cols-2 gap-20">
+					<!-- Left Column -->
+					<div class="ml-auto w-fit">
+						{#each leftColumnRecs as rec, i (rec.id)}
+							<GuidelineRecommendation
+								data={{
+									snomedDisplayMap: data.snomedDisplayMap,
+									recommendation: rec,
+									i: 2 * i,
+									isLeftColumn: true
+								}}
+								bind:selected={selectedRecommendation}
+							/>
+						{/each}
+					</div>
 
-				<!-- Right Column -->
-				<div class="mr-auto w-fit">
-					{#each rightColumnRecs as rec, i (rec.id)}
-						<GuidelineRecommendation
-							recommendation={rec}
-							i={2 * i + 1}
-							bind:selected={selectedRecommendation}
-							snomedDisplayMap={data.snomedDisplayMap}
-						/>
-					{/each}
+					<!-- Right Column -->
+					<div class="mr-auto w-fit">
+						{#each rightColumnRecs as rec, i (rec.id)}
+							<GuidelineRecommendation
+								data={{
+									snomedDisplayMap: data.snomedDisplayMap,
+									recommendation: rec,
+									i: 2 * i + 1,
+									isLeftColumn: false
+								}}
+								bind:selected={selectedRecommendation}
+							/>
+						{/each}
+					</div>
 				</div>
 			</div>
-		</div>
-	{/if}
+		{/if}
+	{/key}
 </div>

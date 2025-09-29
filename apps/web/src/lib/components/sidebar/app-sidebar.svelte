@@ -7,6 +7,7 @@
 	import favicon from '$lib/assets/favicon.png';
 	import GaugeIcon from '@lucide/svelte/icons/gauge';
 	import HammerIcon from '@lucide/svelte/icons/hammer';
+	import MergeIcon from '@lucide/svelte/icons/merge';
 	import SidebarUser from './sidebar-user.svelte';
 
 	let {
@@ -27,6 +28,11 @@
 			icon: HammerIcon,
 			url: '/builder',
 			matcher: /^\/builder(\/.*)?$/
+		},
+		{
+			title: 'Interaction Detection',
+			icon: MergeIcon,
+			url: '/interactions'
 		}
 	];
 </script>

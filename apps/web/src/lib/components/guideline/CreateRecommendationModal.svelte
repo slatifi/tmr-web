@@ -46,7 +46,12 @@
 			const res = await fetch('/api/recommendation', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ action: action.trim(), strength: strength.trim(), guidelineId })
+				body: JSON.stringify({
+					action: action.trim(),
+					strength: strength.trim(),
+					guidelineId,
+					actionPrefix: actionPrefix.trim()
+				})
 			});
 
 			const data = await res.json();

@@ -3,6 +3,8 @@ import { Controller, Get, ParseArrayPipe, Query } from '@nestjs/common';
 import { InteractionService } from './interaction.service';
 import { ExpandedGuideline } from '@/cig/guideline/entities/expanded-guideline.entity';
 import { Session } from '@thallesp/nestjs-better-auth';
+import { ApiQuery, ApiResponse } from '@nestjs/swagger';
+import { InteractionEntity } from './entities/interaction.entity';
 
 @Controller('interaction')
 export class InteractionController {
@@ -11,6 +13,8 @@ export class InteractionController {
 		private readonly guidelineService: GuidelineService
 	) {}
 
+	@ApiQuery({ name: 'ids', type: Number, description: 'Comma-separated list of guideline IDs' })
+	@ApiResponse({ status: 200, description: 'List of interactions', type: InteractionEntity })
 	@Get()
 	async findAll(
 		@Query('ids', new ParseArrayPipe({ items: Number, separator: ',' })) ids: number[],

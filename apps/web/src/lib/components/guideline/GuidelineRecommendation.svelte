@@ -1,16 +1,28 @@
 <script lang="ts">
-	import { ArrowRight, Minus, Plus, Trash2Icon } from '@lucide/svelte';
 	import type { RecommendationWithRelations } from '@repo/shared-types';
 	import DeleteModal from './DeleteModal.svelte';
+	import Contribution from './Contribution.svelte';
+	import { Handle, Position } from '@xyflow/svelte';
 
 	interface Props {
 		recommendation: RecommendationWithRelations;
 		i: number;
-		selected: number | null;
 		snomedDisplayMap: Record<string, string>;
+		editable?: boolean;
+		withContributions?: boolean;
+		isLeftColumn?: boolean;
 	}
 
-	let { recommendation, i = 0, selected = $bindable(null), snomedDisplayMap }: Props = $props();
+	let { selected = $bindable(null), data }: { selected?: number | null; data: Props } = $props();
+
+	let {
+		recommendation,
+		i,
+		snomedDisplayMap,
+		editable = true,
+		withContributions = true,
+		isLeftColumn = true
+	}: Props = data;
 
 	let deleteContributionOpen = $state(false);
 	let selectedContributionId: number | null = $state(null);
@@ -36,15 +48,30 @@
 			recommendation.id
 				? 'ring-2 ring-green-500 ring-offset-2'
 				: ''}"
-			onclick={(e) =>
-				selected === recommendation.id
-					? ((selected = null), e.currentTarget.blur())
-					: (selected = recommendation.id)}
+			onclick={editable
+				? (e) =>
+						selected === recommendation.id
+							? ((selected = null), e.currentTarget.blur())
+							: (selected = recommendation.id)
+				: undefined}
 			onkeydown={(e) => e.key === 'Escape' && (selected = null)}
 			onblur={(e) => e.preventDefault()}
 			role="button"
 			tabindex="0"
 		>
+			{#if !editable}
+				<Handle
+					type="source"
+					position={isLeftColumn ? Position.Right : Position.Left}
+					style="background: #555; width: 8px; height: 8px;"
+				/>
+				<Handle
+					type="target"
+					position={isLeftColumn ? Position.Right : Position.Left}
+					style="background: #555; width: 8px; height: 8px;"
+				/>
+			{/if}
+
 			<div class="flex justify-center gap-1 text-sm">
 				<p>R{i + 1}:</p>
 				<span class="font-semibold {textColor} whitespace-nowrap lowercase">
@@ -61,56 +88,35 @@
 		</div>
 
 		<!-- Contributions -->
-		{#if recommendation.contributions && recommendation.contributions.length > 0}
+		{#if withContributions && recommendation.contributions && recommendation.contributions.length > 0}
 			<div class="flex flex-col justify-center gap-2">
 				{#each recommendation.contributions as contribution, ci (contribution.id)}
-					{#if contribution.transition}
-						<div
-							class="flex min-w-[180px] items-center justify-between gap-4 rounded-lg border border-gray-300 bg-white px-3 py-2 shadow-sm"
-						>
-							<div>
-								<div class="mb-1 flex items-center gap-1 text-xs font-medium text-gray-600">
-									{#if contribution.value === 'POSITIVE'}
-										<Plus class="inline h-3 w-3 text-green-600" />
-									{:else if contribution.value === 'NEGATIVE'}
-										<Minus class="inline h-3 w-3 text-red-600" />
-									{:else}
-										<span class="inline-block h-3 w-3 rounded-full bg-gray-400"></span>
-									{/if}
-									C{i + 1}.{ci + 1}:
-									{contribution.transition.derivative.toLowerCase()}
-									{snomedDisplayMap[contribution.transition.property] ||
-										contribution.transition.property}
-								</div>
-								<div class="flex items-center gap-2 text-xs">
-									<span class="font-medium text-gray-700">{contribution.transition.pre}</span>
-									<ArrowRight class="h-3 w-3 text-gray-500" />
-									<span class="font-medium text-gray-700">{contribution.transition.post}</span>
-								</div>
-							</div>
-							<div>
-								<button
-									class="rounded-full bg-red-100 p-1 text-red-600 hover:bg-red-200 hover:ring-2 hover:ring-red-300 hover:outline-none"
-									onclick={() => handleOpenDeleteContribution(contribution.id)}
-								>
-									<Trash2Icon class="h-4 w-4" />
-								</button>
-							</div>
-						</div>
-					{/if}
+					<Contribution
+						data={{
+							contribution,
+							i,
+							ci,
+							handleDelete: handleOpenDeleteContribution,
+							editable,
+							snomedDisplayMap,
+							isLeftColumn
+						}}
+					/>
 				{/each}
 			</div>
-			<DeleteModal
-				bind:open={deleteContributionOpen}
-				resourceType="contribution"
-				resourceId={selectedContributionId || undefined}
-				resourceTitle={`${selectedContribution?.transition?.derivative.toLowerCase()} ${
-					(selectedContribution?.transition?.property &&
-						snomedDisplayMap[selectedContribution?.transition?.property]) ||
-					selectedContribution?.transition?.property
-				}`}
-				invalidationRoute="guideline"
-			/>
+			{#if editable}
+				<DeleteModal
+					bind:open={deleteContributionOpen}
+					resourceType="contribution"
+					resourceId={selectedContributionId || undefined}
+					resourceTitle={`${selectedContribution?.transition?.derivative.toLowerCase()} ${
+						(selectedContribution?.transition?.property &&
+							snomedDisplayMap[selectedContribution?.transition?.property]) ||
+						selectedContribution?.transition?.property
+					}`}
+					invalidationRoute="guideline"
+				/>
+			{/if}
 		{/if}
 	</div>
 </div>
