@@ -7,7 +7,7 @@
 	interface Props {
 		recommendation: RecommendationWithRelations;
 		i: number;
-		snomedDisplayMap: Record<string, string>;
+		snomedDisplayMap: Map<string, string>;
 		editable?: boolean;
 		withContributions?: boolean;
 		isLeftColumn?: boolean;
@@ -41,8 +41,8 @@
 	const textColor = isShould ? 'text-blue-500' : 'text-orange-500';
 </script>
 
-<div class="relative mb-8 flex w-full items-start justify-end gap-4">
-	<div class="flex h-full w-full flex-col justify-center gap-2">
+<div class="relative mb-8 flex w-fit items-start justify-end gap-4">
+	<div class="flex h-full w-fit flex-col justify-center gap-2">
 		<div
 			class="border-2 bg-white {borderColor} w-full min-w-[140px] rounded-lg px-4 py-3 shadow-sm hover:cursor-pointer {selected ===
 			recommendation.id
@@ -63,11 +63,13 @@
 				<Handle
 					type="source"
 					position={isLeftColumn ? Position.Right : Position.Left}
+					id="rec-{recommendation.id}"
 					style="background: #555; width: 8px; height: 8px;"
 				/>
 				<Handle
 					type="target"
 					position={isLeftColumn ? Position.Right : Position.Left}
+					id="rec-{recommendation.id}"
 					style="background: #555; width: 8px; height: 8px;"
 				/>
 			{/if}

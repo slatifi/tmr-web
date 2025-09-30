@@ -1,12 +1,12 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 import type { GuidelineWithRelations } from '@repo/shared-types';
-import { getNameFromSnomedCode } from '$lib/stores/SnomedStore.svelte';
+import { getSnomedNames } from '$lib/stores/SnomedStore.svelte';
 
 export const load: PageLoad = async ({ fetch, depends, params }) => {
 	let guideline: GuidelineWithRelations | null = null;
 
-	let snomedDisplayMap: Record<string, string> = {};
+	let snomedDisplayMap: Map<string, string> = new Map();
 	if (params.slug) {
 		try {
 			const res = await fetch(`/api/guideline/deep/${params.slug}`);
@@ -33,7 +33,7 @@ export const load: PageLoad = async ({ fetch, depends, params }) => {
 				(c) => c.transition?.property && snomedCodes.add(c.transition.property)
 			); // Contribution transition property code
 		}
-		snomedDisplayMap = await generateSnomedDisplayMap(Array.from(snomedCodes));
+		snomedDisplayMap = await getSnomedNames(Array.from(snomedCodes));
 	}
 
 	depends('app:guideline');
@@ -43,17 +43,3 @@ export const load: PageLoad = async ({ fetch, depends, params }) => {
 		snomedDisplayMap
 	};
 };
-
-async function generateSnomedDisplayMap(codes: string[]): Promise<Record<string, string>> {
-	const map: Record<string, string> = {};
-	for (const code of codes) {
-		map[code] = '??';
-		try {
-			const name = await getNameFromSnomedCode(code);
-			map[code] = name;
-		} catch (err) {
-			console.error(`Error fetching SNOMED name for code ${code}:`, err);
-		}
-	}
-	return map;
-}

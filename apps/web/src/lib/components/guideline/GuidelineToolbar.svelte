@@ -16,7 +16,7 @@
 		ref: HTMLDivElement | null;
 		recommendationId: number | null;
 		recommendation: Recommendation | null;
-		snomedDisplayMap: Record<string, string>;
+		snomedDisplayMap: Map<string, string>;
 	}
 
 	let {

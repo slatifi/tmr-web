@@ -1,6 +1,7 @@
 import { PUBLIC_SNOMED_BASE_URL } from '$env/static/public';
 
 let snomedToken: string = $state('');
+const snomedNameCache: Map<string, string> = $state(new Map());
 
 export async function getSnomedToken(): Promise<string> {
 	if (!snomedToken) {
@@ -69,4 +70,22 @@ export async function getNameFromSnomedCode(code: string): Promise<string> {
 	} catch {
 		return '??';
 	}
+}
+
+export async function getSnomedNames(codes: string[]): Promise<Map<string, string>> {
+	const codesToFetch = codes.filter((code) => !(code in snomedNameCache));
+	if (codesToFetch.length === 0) {
+		return snomedNameCache;
+	}
+
+	for (const code of codesToFetch) {
+		// Simple cache eviction policy: remove the oldest entry if we exceed 1000 entries
+		if (snomedNameCache.size >= 1000) {
+			const firstKey = snomedNameCache.keys().next().value;
+			if (firstKey) snomedNameCache.delete(firstKey);
+		}
+
+		snomedNameCache[code] = await getNameFromSnomedCode(code);
+	}
+	return snomedNameCache;
 }

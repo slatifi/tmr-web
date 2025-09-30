@@ -1,6 +1,5 @@
 <script lang="ts">
-	import CheckIcon from '@lucide/svelte/icons/check';
-	import ChevronsUpDownIcon from '@lucide/svelte/icons/chevrons-up-down';
+	import { Loader2Icon, CheckIcon, ChevronsUpDownIcon } from '@lucide/svelte';
 
 	import * as Card from '$lib/components/ui/card';
 	import * as Command from '$lib/components/ui/command';
@@ -18,6 +17,7 @@
 		description?: string;
 		onSubmit?: () => void;
 		submitText?: string;
+		disabled?: boolean;
 	}
 
 	let {
@@ -27,7 +27,8 @@
 		title = 'Guidelines',
 		description = 'Select guidelines for interaction detection',
 		onSubmit,
-		submitText = 'Run interaction check'
+		submitText = 'Run interaction check',
+		disabled = false
 	}: Props = $props();
 
 	let open = $state(false);
@@ -64,6 +65,7 @@
 						)}
 						role="combobox"
 						aria-expanded={open}
+						{disabled}
 					>
 						<div class="overflow-hidden text-ellipsis whitespace-nowrap">{guidelineName}</div>
 						<ChevronsUpDownIcon class="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -106,6 +108,12 @@
 				</Command.Root>
 			</Popover.Content>
 		</Popover.Root>
-		<Button size="sm" variant="default" class="mt-4 w-full" onclick={onSubmit}>{submitText}</Button>
+		<Button size="sm" variant="default" class="mt-4 w-full" {disabled} onclick={onSubmit}>
+			{#if disabled}
+				<Loader2Icon class="mr-2 h-4 w-4 animate-spin" />
+			{:else}
+				{submitText}
+			{/if}
+		</Button>
 	</Card.Content>
 </Card.Root>

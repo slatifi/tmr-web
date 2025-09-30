@@ -9,7 +9,7 @@
 		ci: number;
 		handleDelete: (id: number) => void;
 		editable?: boolean;
-		snomedDisplayMap: Record<string, string>;
+		snomedDisplayMap: Map<string, string>;
 		isLeftColumn?: boolean;
 	}
 	let { data }: { data: Props } = $props();
@@ -32,11 +32,13 @@
 			<Handle
 				type="source"
 				position={isLeftColumn ? Position.Right : Position.Left}
+				id="contrib-{contribution.id}"
 				style="background: #555; width: 6px; height: 6px;"
 			/>
 			<Handle
 				type="target"
 				position={isLeftColumn ? Position.Right : Position.Left}
+				id="contrib-{contribution.id}"
 				style="background: #555; width: 6px; height: 6px;"
 			/>
 		{/if}
