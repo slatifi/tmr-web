@@ -22,22 +22,29 @@
 		snomedDisplayMap,
 		isLeftColumn = true
 	}: Props = data;
+
+	const handleStyle = (isLeft: boolean) =>
+		`top: 50%; transform: translateY(-50%); left: ${isLeft ? 'auto' : '-4px'}; right: ${
+			isLeft ? '-4px' : 'auto'
+		};`;
 </script>
 
 {#if contribution.transition}
 	<div
-		class="flex min-w-[180px] items-center justify-between gap-4 rounded-lg border border-gray-300 bg-white px-3 py-2 shadow-sm"
+		class="relative flex min-w-[180px] items-center justify-between gap-4 rounded-lg border border-gray-300 bg-white px-3 py-2 shadow-sm"
 	>
 		{#if !editable}
 			<Handle
 				type="source"
 				position={isLeftColumn ? Position.Right : Position.Left}
 				id="contrib-{contribution.id}"
+				style={handleStyle(isLeftColumn)}
 			/>
 			<Handle
 				type="target"
 				position={isLeftColumn ? Position.Right : Position.Left}
 				id="contrib-{contribution.id}"
+				style={handleStyle(isLeftColumn)}
 			/>
 		{/if}
 		<div>

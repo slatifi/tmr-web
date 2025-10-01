@@ -42,12 +42,17 @@
 	const isShould = recommendation.strength === 'SHOULD';
 	const borderColor = isShould ? 'border-blue-500' : 'border-orange-500';
 	const textColor = isShould ? 'text-blue-500' : 'text-orange-500';
+
+	const handleStyle = (isLeft: boolean) =>
+		`top: 50%; transform: translateY(-50%); left: ${isLeft ? 'auto' : '-4px'}; right: ${
+			isLeft ? '-4px' : 'auto'
+		};`;
 </script>
 
 <div class={cn('relative mb-8 flex w-fit items-start justify-end gap-4', className)}>
 	<div class="flex h-full w-full flex-col justify-center gap-2">
 		<div
-			class="border-2 bg-white {borderColor} w-full min-w-[140px] rounded-lg px-4 py-3 shadow-sm hover:cursor-pointer {selected ===
+			class="relative border-2 bg-white {borderColor} w-full min-w-[140px] rounded-lg px-4 py-3 shadow-sm hover:cursor-pointer {selected ===
 			recommendation.id
 				? 'ring-2 ring-green-500 ring-offset-2'
 				: ''}"
@@ -67,11 +72,13 @@
 					type="source"
 					position={isLeftColumn ? Position.Right : Position.Left}
 					id="rec-{recommendation.id}"
+					style={handleStyle(isLeftColumn)}
 				/>
 				<Handle
 					type="target"
 					position={isLeftColumn ? Position.Right : Position.Left}
 					id="rec-{recommendation.id}"
+					style={handleStyle(isLeftColumn)}
 				/>
 			{/if}
 

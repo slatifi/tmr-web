@@ -66,8 +66,8 @@
 
 		// Calculate columns based on number of recommendations
 		const columnsCount = 2;
-		const columnWidth = 400;
-		const nodeSpacing = 60;
+		const columnWidth = 500;
+		const nodeSpacing = 100;
 
 		const nodes: Node[] = [];
 		const columnHeights: number[] = [0, 0]; // Track current height of each column
@@ -75,7 +75,7 @@
 		recommendations.forEach((rec, index) => {
 			// Determine which column to place this recommendation in
 			const columnIndex = index % columnsCount;
-			const xPosition = columnIndex * columnWidth + 50;
+			const xPosition = columnIndex * columnWidth + 90;
 			const yPosition = columnHeights[columnIndex];
 
 			// Add recommendation node
@@ -89,13 +89,14 @@
 					selected: null, // No selection in interactions view
 					snomedDisplayMap: snomedDisplayMap || {},
 					editable: false,
-					isLeftColumn: columnIndex === 0
+					isLeftColumn: columnIndex === 0,
+					class: 'w-60'
 				},
 				draggable: false
 			});
 
 			// Estimate recommendation node height
-			const estimatedRecHeight = (rec.contributions?.length || 0) * 90;
+			const estimatedRecHeight = (rec.contributions?.length || 0) * 60;
 			columnHeights[columnIndex] += estimatedRecHeight + nodeSpacing;
 		});
 
