@@ -2,7 +2,7 @@
 	import MultiSelectGuideline from '$lib/components/guideline/MultiSelectGuideline.svelte';
 	import type { GuidelineWithRelations, RecommendationWithRelations } from '@repo/shared-types';
 	import type { PageProps } from './$types';
-	import { SvelteFlow, type Node, type Edge } from '@xyflow/svelte';
+	import { SvelteFlow, type Node, type Edge, type NodeTypes } from '@xyflow/svelte';
 	import '@xyflow/svelte/dist/style.css';
 	import GuidelineRecommendation from '$lib/components/guideline/GuidelineRecommendation.svelte';
 	import InteractionEdge from '$lib/components/guideline/InteractionEdge.svelte';
@@ -154,11 +154,11 @@
 			});
 		});
 
-		console.log('Generated edges:', allEdges);
 		return allEdges;
 	});
 
-	const nodeTypes = {
+	const nodeTypes: NodeTypes = {
+		// @ts-expect-error Extra prop
 		recommendation: GuidelineRecommendation
 	};
 
