@@ -1,40 +1,39 @@
 <script lang="ts">
-	import { BaseEdge, getBezierPath, type EdgeProps } from '@xyflow/svelte';
+	import { BaseEdge, EdgeLabel, getBezierPath, type EdgeProps } from '@xyflow/svelte';
 
-	let { sourceX, sourceY, targetX, targetY, ...props }: EdgeProps = $props();
+	let { id, sourceX, sourceY, sourcePosition, targetX, targetY, targetPosition, label }: EdgeProps =
+		$props();
 
-	const [edgePath] = $derived(
+	const [edgePath, labelX, labelY] = $derived(
 		getBezierPath({
 			sourceX,
 			sourceY,
+			sourcePosition,
 			targetX,
-			targetY
+			targetY,
+			targetPosition
 		})
 	);
-
-	const { markerStart, markerEnd, interactionWidth, label, labelStyle } = props;
 
 	// Color coding for different interaction types
 	const getInteractionColor = (label: string) => {
 		const colors: Record<string, string> = {
-			influences: '#3b82f6', // blue
-			contradicts: '#ef4444', // red
-			supports: '#10b981', // green
-			'conflicts with': '#f59e0b', // amber
-			'depends on': '#8b5cf6', // purple
-			enables: '#06b6d4' // cyan
+			alternative: '#3b82f6', // blue
+			divergent: '#ef4444', // red
+			repetition: '#10b981' // green
 		};
-		return colors[label.toLowerCase()] || '#6b7280'; // default gray
+		return colors[label?.toLowerCase()] || '#6b7280'; // default gray
 	};
 
 	const color = getInteractionColor(label || '');
 </script>
 
-<BaseEdge
-	path={edgePath}
-	{markerStart}
-	{markerEnd}
-	{interactionWidth}
-	{label}
-	labelStyle={`${labelStyle} fill: ${color}; font-weight: bold;`}
-/>
+<BaseEdge {id} path={edgePath} />
+<EdgeLabel x={labelX} y={labelY}>
+	<div
+		class="w-fit rounded bg-white px-1 text-xs font-medium shadow"
+		style={`border: 1px solid ${color}; color: ${color};`}
+	>
+		{label}
+	</div>
+</EdgeLabel>

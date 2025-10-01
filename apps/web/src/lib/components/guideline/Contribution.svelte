@@ -33,13 +33,11 @@
 				type="source"
 				position={isLeftColumn ? Position.Right : Position.Left}
 				id="contrib-{contribution.id}"
-				style="background: #555; width: 6px; height: 6px;"
 			/>
 			<Handle
 				type="target"
 				position={isLeftColumn ? Position.Right : Position.Left}
 				id="contrib-{contribution.id}"
-				style="background: #555; width: 6px; height: 6px;"
 			/>
 		{/if}
 		<div>

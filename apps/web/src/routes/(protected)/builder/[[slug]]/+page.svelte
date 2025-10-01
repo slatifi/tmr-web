@@ -66,7 +66,8 @@
 									snomedDisplayMap: data.snomedDisplayMap,
 									recommendation: rec,
 									i: 2 * i,
-									isLeftColumn: true
+									isLeftColumn: true,
+									class: 'w-full'
 								}}
 								bind:selected={selectedRecommendation}
 							/>
@@ -81,7 +82,8 @@
 									snomedDisplayMap: data.snomedDisplayMap,
 									recommendation: rec,
 									i: 2 * i + 1,
-									isLeftColumn: false
+									isLeftColumn: false,
+									class: 'w-full'
 								}}
 								bind:selected={selectedRecommendation}
 							/>

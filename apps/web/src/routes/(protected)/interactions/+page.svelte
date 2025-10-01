@@ -2,7 +2,8 @@
 	import MultiSelectGuideline from '$lib/components/guideline/MultiSelectGuideline.svelte';
 	import type { GuidelineWithRelations, RecommendationWithRelations } from '@repo/shared-types';
 	import type { PageProps } from './$types';
-	import { SvelteFlow, Background, type Node, type Edge, BackgroundVariant } from '@xyflow/svelte';
+	import { SvelteFlow, type Node, type Edge } from '@xyflow/svelte';
+	import '@xyflow/svelte/dist/style.css';
 	import GuidelineRecommendation from '$lib/components/guideline/GuidelineRecommendation.svelte';
 	import InteractionEdge from '$lib/components/guideline/InteractionEdge.svelte';
 	import { getSnomedNames } from '$lib/stores/SnomedStore.svelte';
@@ -64,17 +65,16 @@
 		if (!recommendations || recommendations.length === 0) return [];
 
 		// Calculate columns based on number of recommendations
-		const columnsCount = Math.min(Math.ceil(Math.sqrt(recommendations.length)), 4);
+		const columnsCount = 2;
 		const columnWidth = 400;
-		const nodeSpacing = 10;
+		const nodeSpacing = 60;
 
 		const nodes: Node[] = [];
-		const columnHeights: number[] = new Array(columnsCount).fill(50);
+		const columnHeights: number[] = [0, 0]; // Track current height of each column
 
 		recommendations.forEach((rec, index) => {
 			// Determine which column to place this recommendation in
 			const columnIndex = index % columnsCount;
-			const isLeftColumn = columnIndex < columnsCount / 2;
 			const xPosition = columnIndex * columnWidth + 50;
 			const yPosition = columnHeights[columnIndex];
 
@@ -89,13 +89,13 @@
 					selected: null, // No selection in interactions view
 					snomedDisplayMap: snomedDisplayMap || {},
 					editable: false,
-					isLeftColumn
+					isLeftColumn: columnIndex === 0
 				},
 				draggable: false
 			});
 
 			// Estimate recommendation node height
-			const estimatedRecHeight = (rec.contributions?.length || 0) * 5;
+			const estimatedRecHeight = (rec.contributions?.length || 0) * 90;
 			columnHeights[columnIndex] += estimatedRecHeight + nodeSpacing;
 		});
 
@@ -154,6 +154,7 @@
 			});
 		});
 
+		console.log('Generated edges:', allEdges);
 		return allEdges;
 	});
 
@@ -167,7 +168,7 @@
 
 	// Summary statistics
 	const stats = $derived.by(() => {
-		const totalInteractions = Object.values(interactions).reduce((sum, arr) => sum + arr.length, 0);
+		const totalInteractions = Object.values(interactions).length;
 		const interactionTypes = Object.keys(interactions).length;
 
 		return {
@@ -245,14 +246,10 @@
 				{nodeTypes}
 				{edgeTypes}
 				fitView
-				minZoom={0.3}
-				maxZoom={1.5}
-				defaultViewport={{ x: 0, y: 0, zoom: 1 }}
-				attributionPosition="bottom-left"
-			>
-				<!--Transparent background-->
-				<Background variant={BackgroundVariant.Dots} gap={20} size={1} />
-			</SvelteFlow>
+				minZoom={0.5}
+				maxZoom={1}
+				style="width: 100%; height: 100%; background: none;"
+			></SvelteFlow>
 		</div>
 	{/if}
 
@@ -262,7 +259,7 @@
 			<div class="max-w-md rounded-lg bg-white p-8 text-center shadow-lg">
 				<h3 class="mb-4 text-xl font-semibold text-gray-800">Guideline Interactions</h3>
 				<p class="mb-4 text-gray-600">
-					Select one or more guidelines to visualize the interactions between their recommendations
+					Select one or more guidelines to visualise the interactions between their recommendations
 					and contributions.
 				</p>
 				<div class="text-sm text-gray-500">
