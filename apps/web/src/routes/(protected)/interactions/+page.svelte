@@ -1,5 +1,5 @@
 <script lang="ts">
-	import MultiSelectGuideline from '$lib/components/guideline/MultiSelectGuideline.svelte';
+	import SelectGuideline from '$lib/components/guideline/SelectGuideline.svelte';
 	import type { GuidelineWithRelations, RecommendationWithRelations } from '@repo/shared-types';
 	import type { PageProps } from './$types';
 	import { SvelteFlow, type Node, type Edge, type NodeTypes } from '@xyflow/svelte';
@@ -191,11 +191,12 @@
 >
 	<!-- Guidelines Selection Panel (top left) -->
 	<div class="absolute top-4 left-4 z-10">
-		<MultiSelectGuideline
+		<SelectGuideline
 			guidelines={data?.guidelines}
 			bind:selectedGuidelines
 			onSubmit={loadSelectedGuidelines}
 			disabled={loading}
+			single={false}
 		/>
 	</div>
 

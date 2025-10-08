@@ -1,13 +1,13 @@
 <script lang="ts">
 	import type { PageProps } from './$types';
-	import SelectGuideline from '$lib/components/guideline/SelectGuideline.svelte';
+	import SelectOrCreateGuideline from '$lib/components/guideline/SelectOrCreateGuideline.svelte';
 	import GuidelineToolbar from '$lib/components/guideline/GuidelineToolbar.svelte';
 	import { goto } from '$app/navigation';
 	import GuidelineRecommendation from '$lib/components/guideline/GuidelineRecommendation.svelte';
 
 	const { data }: PageProps = $props();
 
-	let selectedGuideline = $state('');
+	let selectedGuideline = $state(-1);
 	let selectedRecommendation = $state<number | null>(null);
 
 	let recommendation = $derived.by(() => {
@@ -16,17 +16,17 @@
 
 	$effect(() => {
 		// If no guideline is selected, but there is one in the data, select it
-		if (!selectedGuideline && data.guideline) {
-			selectedGuideline = data.guideline.id.toString();
+		if (selectedGuideline < 0 && data.guideline) {
+			selectedGuideline = data.guideline.id;
 		}
 	});
 
 	$effect(() => {
 		// If a guideline is selected, but it's different from the current one, navigate to it
 		if (
-			selectedGuideline &&
-			data.guideline?.id.toString() !== selectedGuideline &&
-			data?.guidelines?.some((g) => g.id.toString() === selectedGuideline)
+			selectedGuideline > 0 &&
+			data.guideline?.id !== selectedGuideline &&
+			data?.guidelines?.some((g) => g.id === selectedGuideline)
 		) {
 			selectedRecommendation = null;
 			goto(`/builder/${selectedGuideline}`);
@@ -46,7 +46,7 @@
 <div
 	class="relative h-full bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:20px_20px]"
 >
-	<SelectGuideline bind:selectedGuideline guidelines={data?.guidelines} />
+	<SelectOrCreateGuideline bind:selectedGuideline guidelines={data?.guidelines} />
 	<GuidelineToolbar
 		guideline={data.guideline}
 		bind:ref={toolbarRef}

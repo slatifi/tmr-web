@@ -97,7 +97,7 @@
 {#if guideline}
 	<div transition:fade>
 		<Card.Root
-			class="absolute bottom-2 left-2 flex w-84  max-w-[90vw] min-w-[250px] flex-col gap-0 p-4"
+			class="absolute bottom-4 left-4 flex w-84  max-w-[90vw] min-w-[250px] flex-col gap-0 p-4"
 			bind:ref
 		>
 			<Card.Header class="w-full gap-0 p-0">

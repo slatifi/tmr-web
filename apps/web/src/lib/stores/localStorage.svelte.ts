@@ -3,9 +3,7 @@ import { browser } from '$app/environment';
 
 export function createLocalStorageMap<K, V>(key: string) {
 	const storedValue = browser ? localStorage.getItem(key) : null;
-	const initial = storedValue
-		? new SvelteMap<K, V>(JSON.parse(storedValue))
-		: new SvelteMap<K, V>();
+	const initial = new SvelteMap<K, V>(storedValue ? JSON.parse(storedValue) : []);
 	const value = $state(initial);
 
 	// Subscribe to changes and update localStorage
