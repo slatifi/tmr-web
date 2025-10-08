@@ -8,6 +8,8 @@ export const auth = createAuthClient({
 export const {
 	getSession,
 	useSession,
+	updateUser,
+	changePassword,
 	signIn,
 	signOut,
 	signUp,
