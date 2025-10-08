@@ -30,3 +30,8 @@ export function calculateDerivative(pre: SituationType, post: SituationType): De
 
 	return '';
 }
+
+export const svelteFlowHandleStyle = (isLeft: boolean) =>
+	`top: 50%; transform: translateY(-50%); left: ${isLeft ? 'auto' : '-4px'}; right: ${
+		isLeft ? '-4px' : 'auto'
+	};`;

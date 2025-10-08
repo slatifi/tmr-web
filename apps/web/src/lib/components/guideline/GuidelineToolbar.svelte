@@ -151,7 +151,7 @@
 						bind:open={deleteRecommendationModalOpen}
 						resourceType="recommendation"
 						resourceId={recommendationId}
-						resourceTitle={(recommendation && snomedDisplayMap[recommendation.action]) ||
+						resourceTitle={(recommendation && snomedDisplayMap.get(recommendation.action)) ||
 							'Recommendation'}
 						invalidationRoute="guideline"
 						onDelete={() => (recommendationId = null)}

@@ -4,6 +4,7 @@
 	import Contribution from './Contribution.svelte';
 	import { Handle, Position } from '@xyflow/svelte';
 	import { cn } from '$lib/utils';
+	import { svelteFlowHandleStyle } from './utils';
 
 	interface Props {
 		recommendation: RecommendationWithRelations;
@@ -42,11 +43,6 @@
 	const isShould = recommendation.strength === 'SHOULD';
 	const borderColor = isShould ? 'border-blue-500' : 'border-orange-500';
 	const textColor = isShould ? 'text-blue-500' : 'text-orange-500';
-
-	const handleStyle = (isLeft: boolean) =>
-		`top: 50%; transform: translateY(-50%); left: ${isLeft ? 'auto' : '-4px'}; right: ${
-			isLeft ? '-4px' : 'auto'
-		};`;
 </script>
 
 <div class={cn('relative mb-8 flex w-fit items-start justify-end gap-4', className)}>
@@ -72,13 +68,13 @@
 					type="source"
 					position={isLeftColumn ? Position.Right : Position.Left}
 					id="rec-{recommendation.id}"
-					style={handleStyle(isLeftColumn)}
+					style={svelteFlowHandleStyle(isLeftColumn)}
 				/>
 				<Handle
 					type="target"
 					position={isLeftColumn ? Position.Right : Position.Left}
 					id="rec-{recommendation.id}"
-					style={handleStyle(isLeftColumn)}
+					style={svelteFlowHandleStyle(isLeftColumn)}
 				/>
 			{/if}
 
@@ -93,7 +89,7 @@
 				{#if recommendation.actionPrefix}
 					{`${recommendation.actionPrefix} `}
 				{/if}
-				{snomedDisplayMap[recommendation.action] || recommendation.action}
+				{snomedDisplayMap.get(recommendation.action) || recommendation.action}
 			</div>
 		</div>
 
@@ -121,7 +117,7 @@
 					resourceId={selectedContributionId || undefined}
 					resourceTitle={`${selectedContribution?.transition?.derivative.toLowerCase()} ${
 						(selectedContribution?.transition?.property &&
-							snomedDisplayMap[selectedContribution?.transition?.property]) ||
+							snomedDisplayMap.get(selectedContribution?.transition?.property)) ||
 						selectedContribution?.transition?.property
 					}`}
 					invalidationRoute="guideline"

@@ -7,6 +7,7 @@
 	import GuidelineRecommendation from '$lib/components/guideline/GuidelineRecommendation.svelte';
 	import InteractionEdge from '$lib/components/guideline/InteractionEdge.svelte';
 	import { getSnomedNames } from '$lib/stores/SnomedStore.svelte';
+	import { SvelteMap } from 'svelte/reactivity';
 
 	interface Interaction {
 		entity: 'recommendation' | 'contribution';
@@ -60,14 +61,13 @@
 		loaded = true;
 	}
 
-	// Function to calculate dynamic positions for nodes
-	function calculateNodePositions(): Node[] {
-		if (!recommendations || recommendations.length === 0) return [];
+	const allNodes = $derived.by((): Node[] => {
+		if (loading || !recommendations || recommendations.length === 0) return [];
 
 		// Calculate columns based on number of recommendations
 		const columnsCount = 2;
 		const columnWidth = 500;
-		const nodeSpacing = 100;
+		const nodeSpacing = 85;
 
 		const nodes: Node[] = [];
 		const columnHeights: number[] = [0, 0]; // Track current height of each column
@@ -78,6 +78,9 @@
 			const xPosition = columnIndex * columnWidth + 90;
 			const yPosition = columnHeights[columnIndex];
 
+			// Estimate number of lines for action text (assuming 29 chars per line based on fixed width)
+			const lines = Math.ceil((snomedDisplayMap.get(rec.action)?.length || 0) / 29) || 1;
+
 			// Add recommendation node
 			nodes.push({
 				id: `rec-${rec.id}`,
@@ -86,27 +89,31 @@
 				data: {
 					recommendation: rec,
 					i: index,
-					selected: null, // No selection in interactions view
 					snomedDisplayMap: snomedDisplayMap || {},
 					editable: false,
 					isLeftColumn: columnIndex === 0,
 					class: 'w-60'
 				},
-				draggable: false
+				draggable: true
 			});
 
 			// Estimate recommendation node height
-			const estimatedRecHeight = (rec.contributions?.length || 0) * 60;
+			const estimatedRecHeight = (rec.contributions?.length || 0) * 60 + lines * 15;
 			columnHeights[columnIndex] += estimatedRecHeight + nodeSpacing;
 		});
 
 		return nodes;
-	}
+	});
 
-	// Create all nodes (recommendations + contributions)
-	const allNodes = $derived.by((): Node[] => {
-		if (loading || recommendations.length === 0) return [];
-		return calculateNodePositions();
+	// Instead of searching through recommendations each time, create a map
+	const contribToRecMap = $derived.by(() => {
+		const map = new SvelteMap<number, number>();
+		for (const rec of recommendations) {
+			for (const contrib of rec.contributions ?? []) {
+				map.set(contrib.id, rec.id);
+			}
+		}
+		return map;
 	});
 
 	// Create edges from interaction data
@@ -119,35 +126,30 @@
 		// Process each interaction type
 		Object.entries(interactions).forEach(([interactionType, interactionList]) => {
 			interactionList.forEach((interaction) => {
-				const sourceId =
-					interaction.entity === 'recommendation'
-						? `rec-${interaction.id1}`
-						: `contrib-${interaction.id1}`;
-				const targetId =
-					interaction.entity === 'recommendation'
-						? `rec-${interaction.id2}`
-						: `contrib-${interaction.id2}`;
+				let source: string;
+				let target: string;
+				let sourceHandle: string;
+				let targetHandle: string;
+
+				if (interaction.entity === 'recommendation') {
+					source = `rec-${interaction.id1}`;
+					target = `rec-${interaction.id2}`;
+					sourceHandle = source;
+					targetHandle = target;
+				} else {
+					// contribution
+					source = `rec-${contribToRecMap.get(interaction.id1)}`;
+					target = `rec-${contribToRecMap.get(interaction.id2)}`;
+					sourceHandle = `contrib-${interaction.id1}`;
+					targetHandle = `contrib-${interaction.id2}`;
+				}
 
 				allEdges.push({
 					id: `edge-${edgeIndex++}`,
-					source:
-						interaction.entity === 'recommendation'
-							? `rec-${interaction.id1}`
-							: `rec-${
-									recommendations.find((rec) =>
-										rec.contributions?.some((c) => c.id === interaction.id1)
-									)?.id
-								}`,
-					target:
-						interaction.entity === 'recommendation'
-							? `rec-${interaction.id2}`
-							: `rec-${
-									recommendations.find((rec) =>
-										rec.contributions?.some((c) => c.id === interaction.id2)
-									)?.id
-								}`,
-					sourceHandle: sourceId,
-					targetHandle: targetId,
+					source,
+					target,
+					sourceHandle,
+					targetHandle,
 					type: 'interaction',
 					label: interactionType,
 					animated: true

@@ -2,6 +2,7 @@
 	import type { ContributionWithRelations } from '@repo/shared-types';
 	import { Plus, Minus, ArrowRight, Trash2Icon } from '@lucide/svelte';
 	import { Handle, Position } from '@xyflow/svelte';
+	import { svelteFlowHandleStyle } from './utils';
 
 	interface Props {
 		contribution: ContributionWithRelations;
@@ -22,11 +23,6 @@
 		snomedDisplayMap,
 		isLeftColumn = true
 	}: Props = data;
-
-	const handleStyle = (isLeft: boolean) =>
-		`top: 50%; transform: translateY(-50%); left: ${isLeft ? 'auto' : '-4px'}; right: ${
-			isLeft ? '-4px' : 'auto'
-		};`;
 </script>
 
 {#if contribution.transition}
@@ -38,13 +34,13 @@
 				type="source"
 				position={isLeftColumn ? Position.Right : Position.Left}
 				id="contrib-{contribution.id}"
-				style={handleStyle(isLeftColumn)}
+				style={svelteFlowHandleStyle(isLeftColumn)}
 			/>
 			<Handle
 				type="target"
 				position={isLeftColumn ? Position.Right : Position.Left}
 				id="contrib-{contribution.id}"
-				style={handleStyle(isLeftColumn)}
+				style={svelteFlowHandleStyle(isLeftColumn)}
 			/>
 		{/if}
 		<div>
@@ -58,7 +54,7 @@
 				{/if}
 				C{i + 1}.{ci + 1}:
 				{contribution.transition.derivative.toLowerCase()}
-				{snomedDisplayMap[contribution.transition.property] || contribution.transition.property}
+				{snomedDisplayMap.get(contribution.transition.property) || contribution.transition.property}
 			</div>
 			<div class="flex items-center gap-2 text-xs">
 				<span class="font-medium text-gray-700">{contribution.transition.pre}</span>
