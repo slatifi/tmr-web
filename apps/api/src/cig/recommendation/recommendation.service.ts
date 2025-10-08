@@ -15,6 +15,15 @@ export class RecommendationService {
 		return new Recommendation(recommendation);
 	}
 
+	async findAllByUser(userId: string) {
+		if (!userId || typeof userId !== 'string') return [];
+
+		const recommendations = await this.db.recommendation.findMany({
+			where: { guideline: { userId } }
+		});
+		return recommendations.map((rec) => new Recommendation(rec));
+	}
+
 	async findAll(guidelineId: number) {
 		const recommendations = await this.db.recommendation.findMany({
 			where: { guidelineId },

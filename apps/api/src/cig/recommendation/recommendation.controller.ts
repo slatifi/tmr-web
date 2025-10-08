@@ -3,6 +3,7 @@ import { RecommendationService } from './recommendation.service';
 import { CreateRecommendationDto } from './dto/create-recommendation.dto';
 import { UpdateRecommendationDto } from './dto/update-recommendation.dto';
 import { ResourceOwnership } from '@/common/guards/resource-ownership.guard';
+import { Session, type UserSession } from '@thallesp/nestjs-better-auth';
 
 @Controller('recommendation')
 export class RecommendationController {
@@ -12,6 +13,11 @@ export class RecommendationController {
 	@ResourceOwnership({ resourceType: 'guideline', idParam: 'guidelineId' })
 	create(@Body() createRecommendationDto: CreateRecommendationDto) {
 		return this.recommendationService.create(createRecommendationDto);
+	}
+
+	@Get()
+	findAllByUser(@Session() session: UserSession) {
+		return this.recommendationService.findAllByUser(session?.user?.id as string);
 	}
 
 	@Get('all/:guidelineId')
