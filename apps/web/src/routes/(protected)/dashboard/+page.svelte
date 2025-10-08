@@ -55,7 +55,7 @@
 
 <div class="container mx-auto space-y-6 p-6">
 	<div class="space-y-2">
-		<h1 class="text-3xl font-bold tracking-tight">Hey, {data.user.name}</h1>
+		<h1 class="text-3xl font-bold tracking-tight">Hey, {data.user.name.split(' ')[0]}</h1>
 		<p class="text-muted-foreground">Welcome back! Here's an overview of your guidelines.</p>
 	</div>
 

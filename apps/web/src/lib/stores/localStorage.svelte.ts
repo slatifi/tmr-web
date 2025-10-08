@@ -9,7 +9,6 @@ export function createLocalStorageMap<K, V>(key: string) {
 	// Subscribe to changes and update localStorage
 	$effect.root(() => {
 		$effect(() => {
-			console.log('Map changed, updating localStorage');
 			if (!browser) return;
 			localStorage.setItem(key, JSON.stringify(Array.from(value.entries())));
 		});
