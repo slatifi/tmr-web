@@ -49,8 +49,8 @@
 		};
 	});
 
-	// Get recent guidelines (last 5)
-	const recentGuidelines = $derived(guidelines.slice(0, 5));
+	// Get recent guidelines (last 3)
+	const recentGuidelines = $derived(guidelines.slice(0, 3));
 </script>
 
 <div class="container mx-auto space-y-6 p-6">
@@ -176,7 +176,7 @@
 							{/if}
 						{/each}
 
-						{#if guidelines.length > 5}
+						{#if guidelines.length > 3}
 							<div class="mt-4 text-center">
 								<Button variant="outline" size="sm" onclick={() => goto('/builder')}>
 									View all guidelines
