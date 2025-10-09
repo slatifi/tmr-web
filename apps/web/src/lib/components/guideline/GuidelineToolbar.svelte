@@ -10,6 +10,7 @@
 	import CreateRecommendationModal from './CreateRecommendationModal.svelte';
 	import CreateContributionModal from './CreateContributionModal.svelte';
 	import { tick } from 'svelte';
+	import { EyeIcon, LockIcon } from '@lucide/svelte';
 
 	interface Props {
 		guideline: Guideline | null;
@@ -63,6 +64,29 @@
 		}
 	}
 
+	async function togglePublic() {
+		if (!guideline) return;
+		error = null;
+
+		try {
+			const res = await fetch(`/api/guideline/${guideline.id}/`, {
+				method: 'PATCH',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ public: !guideline.public })
+			});
+			if (!res.ok) {
+				const resData = await res.json();
+				error = resData.message || 'Failed to toggle guideline visibility. Please try again.';
+				return;
+			}
+		} catch (err) {
+			error = 'An unexpected error occurred. Please try again.';
+			console.error(err);
+		} finally {
+			invalidate('app:guideline');
+		}
+	}
+
 	async function onTitleOrDescriptionChange(data: { title?: string; description?: string }) {
 		if (!guideline) return;
 		error = null;
@@ -112,14 +136,21 @@
 						</div>
 					{/if}
 
-					<input
-						bind:value={tempTitle}
-						bind:this={titleInput}
-						class="w-full border-b-1 border-transparent px-0 py-1 text-xl transition-all duration-300 ease-in-out hover:border-b-primary focus:border-b-primary focus:ring-0 focus:outline-none"
-						onblur={() => saveTitle()}
-						onkeydown={(e) => e.key === 'Enter' && titleInput?.blur()}
-						name="title"
-					/>
+					<div class="flex w-full items-center gap-1">
+						{#if guideline.public}
+							<EyeIcon class="inline h-4 w-4 text-muted-foreground" />
+						{:else}
+							<LockIcon class="inline h-4 w-4 text-muted-foreground" />
+						{/if}
+						<input
+							bind:value={tempTitle}
+							bind:this={titleInput}
+							class="w-full border-b-1 border-transparent px-0 py-1 text-xl transition-all duration-300 ease-in-out hover:border-b-primary focus:border-b-primary focus:ring-0 focus:outline-none"
+							onblur={() => saveTitle()}
+							onkeydown={(e) => e.key === 'Enter' && titleInput?.blur()}
+							name="title"
+						/>
+					</div>
 				</Card.Title>
 				<Card.Description class="mt-1 flex w-full flex-wrap items-start gap-2 break-words">
 					<textarea
@@ -173,6 +204,11 @@
 					<Separator class="my-2" />
 				</div>
 			{/if}
+
+			<Button size="sm" variant="default" class="mb-2 w-full" onclick={togglePublic}>
+				{guideline.public ? 'Make Private' : 'Make Public'}
+			</Button>
+
 			<Button
 				size="sm"
 				variant="outline"
