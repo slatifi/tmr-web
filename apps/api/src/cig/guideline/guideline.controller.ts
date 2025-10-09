@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
+import {
+	Controller,
+	Get,
+	Post,
+	Body,
+	Patch,
+	Param,
+	Delete,
+	ParseIntPipe,
+	Query,
+	ParseBoolPipe
+} from '@nestjs/common';
 import { GuidelineService } from './guideline.service';
 import { CreateGuidelineDto } from './dto/create-guideline.dto';
 import { UpdateGuidelineDto } from './dto/update-guideline.dto';
@@ -19,15 +30,17 @@ export class GuidelineController {
 	}
 
 	@Get()
-	findAll(@Session() session: UserSession) {
-		return this.guidelineService.findAll(session.user.id);
+	findAll(
+		@Query('mine', new ParseBoolPipe({ optional: true })) mine: boolean = true,
+		@Session() session: UserSession
+	) {
+		return this.guidelineService.findAll(session.user.id, mine);
 	}
 
 	@Get('deep/:id')
-	@ResourceOwnership('guideline')
 	@ApiResponse({ status: 200, type: ExpandedGuideline })
-	findOneDeep(@Param('id', ParseIntPipe) id: number) {
-		return this.guidelineService.findOne(id, true);
+	findOneDeep(@Param('id', ParseIntPipe) id: number, @Session() session: UserSession) {
+		return this.guidelineService.findOne(id, true, session.user.id);
 	}
 
 	@Get(':id')

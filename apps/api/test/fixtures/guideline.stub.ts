@@ -8,6 +8,7 @@ export const guidelineStub = {
 	description: 'Test Description',
 	createdAt: new Date(),
 	updatedAt: new Date(),
+	public: false,
 	userId: 'user-1'
 } as Guideline;
 

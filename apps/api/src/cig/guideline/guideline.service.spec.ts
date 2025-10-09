@@ -49,9 +49,9 @@ describe('GuidelineService', () => {
 	});
 
 	describe('findAll', () => {
-		it('should return all guidelines for a user', async () => {
+		it('should return all guidelines for a user when mine=true', async () => {
 			db.guideline.findMany.mockResolvedValue([guidelineStub] as Guideline[]);
-			const result = await service.findAll('user-1');
+			const result = await service.findAll('user-1', true);
 			expect(result[0]).toBeInstanceOf(Guideline);
 			expect(db.guideline.findMany).toHaveBeenCalledWith({
 				where: { userId: 'user-1' },
@@ -59,39 +59,53 @@ describe('GuidelineService', () => {
 			});
 		});
 
-		it('should return an empty array if no guidelines found', async () => {
-			db.guideline.findMany.mockResolvedValue([]);
-			const result = await service.findAll('user-999');
-			expect(result).toEqual([]);
+		it('should return public and own guidelines when mine=false', async () => {
+			db.guideline.findMany.mockResolvedValue([guidelineStub] as Guideline[]);
+			const result = await service.findAll('user-1', false);
+			expect(result[0]).toBeInstanceOf(Guideline);
 			expect(db.guideline.findMany).toHaveBeenCalledWith({
-				where: { userId: 'user-999' },
+				where: { OR: [{ public: true }, { userId: 'user-1' }] },
 				orderBy: { createdAt: 'desc' }
 			});
 		});
 	});
 
 	describe('findOne', () => {
-		it('should return a guideline by id', async () => {
+		it('should return a guideline by id when deep=false', async () => {
 			db.guideline.findUnique.mockResolvedValue(guidelineStub as Guideline);
-			const result = await service.findOne(1, false);
+			const result = await service.findOne(1, false, 'user-1');
 			expect(result).toBeInstanceOf(Guideline);
-			expect(db.guideline.findUnique).toHaveBeenCalledWith({ where: { id: 1 } });
+			expect(db.guideline.findUnique).toHaveBeenCalledWith({ where: { id: 1, userId: 'user-1' } });
 		});
 
-		it('should return an expanded guideline when deep is true', async () => {
-			db.guideline.findUnique.mockResolvedValue(expandedGuidelineStub as ExpandedGuideline);
-			const result = await service.findOne(1, true);
+		it('should return an expanded guideline when deep=true', async () => {
+			db.guideline.findFirst.mockResolvedValue(expandedGuidelineStub as ExpandedGuideline);
+			const result = await service.findOne(1, true, 'user-1');
 			expect(result).toBeInstanceOf(ExpandedGuideline);
+			expect(db.guideline.findFirst).toHaveBeenCalledWith({
+				where: { id: 1, OR: [{ public: true }, { userId: 'user-1' }] },
+				include: {
+					recommendations: {
+						include: {
+							contributions: {
+								include: {
+									transition: true
+								}
+							}
+						}
+					}
+				}
+			});
 		});
 
 		it('should throw NotFoundException if not found', async () => {
 			db.guideline.findUnique.mockResolvedValue(null);
-			await expect(service.findOne(999)).rejects.toThrow(NotFoundException);
+			await expect(service.findOne(999, false, 'user-1')).rejects.toThrow(NotFoundException);
 		});
 
 		it('should filter out the userId field from the Prisma response', async () => {
 			db.guideline.findUnique.mockResolvedValue(guidelineStub as Guideline);
-			const result = await service.findOne(1, false);
+			const result = await service.findOne(1, false, 'user-1');
 			expect(result).toBeInstanceOf(Guideline);
 			const filtered = instanceToPlain(result);
 			expect(filtered.userId).toBeUndefined();

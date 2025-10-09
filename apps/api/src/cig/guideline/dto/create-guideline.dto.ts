@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsNotEmpty } from 'class-validator';
+import { IsOptional, IsString, IsNotEmpty, IsBoolean } from 'class-validator';
 
 export class CreateGuidelineDto {
 	@IsString()
@@ -8,4 +8,8 @@ export class CreateGuidelineDto {
 	@IsString()
 	@IsOptional()
 	description?: string;
+
+	@IsBoolean()
+	@IsOptional()
+	public?: boolean;
 }

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { Test, TestingModule } from '@nestjs/testing';
 import { GuidelineController } from './guideline.controller';
 import { GuidelineService } from './guideline.service';
@@ -55,21 +56,29 @@ describe('GuidelineController', () => {
 	});
 
 	describe('findAll', () => {
-		it('should return all guidelines for user', async () => {
+		it('should return all guidelines for user with mine=true by default', async () => {
 			service.findAll.mockResolvedValue([new Guideline(guidelineStub)]);
 			// @ts-expect-error mocking session
-			const result = await controller.findAll(sessionStub);
+			const result = await controller.findAll(true, sessionStub);
 			expect(result[0]).toBeInstanceOf(Guideline);
-			expect(service.findAll).toHaveBeenCalledWith('user-1');
+			expect(service.findAll).toHaveBeenCalledWith('user-1', true);
+		});
+
+		it('should return public and own guidelines when mine=false', async () => {
+			service.findAll.mockResolvedValue([new Guideline(guidelineStub)]);
+			// @ts-expect-error mocking session
+			const result = await controller.findAll(false, sessionStub);
+			expect(result[0]).toBeInstanceOf(Guideline);
+			expect(service.findAll).toHaveBeenCalledWith('user-1', false);
 		});
 	});
 
 	describe('findOneDeep', () => {
-		it('should return expanded guideline', async () => {
+		it('should return expanded guideline with userId for access control', async () => {
 			service.findOne.mockResolvedValue(new ExpandedGuideline(expandedGuidelineStub));
-			const result = await controller.findOneDeep(1);
+			const result = await controller.findOneDeep(1, sessionStub as any);
 			expect(result).toBeInstanceOf(ExpandedGuideline);
-			expect(service.findOne).toHaveBeenCalledWith(1, true);
+			expect(service.findOne).toHaveBeenCalledWith(1, true, 'user-1');
 		});
 
 		it('should fail if id is not a number', async () => {

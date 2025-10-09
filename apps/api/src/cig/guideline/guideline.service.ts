@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateGuidelineDto } from './dto/create-guideline.dto';
 import { UpdateGuidelineDto } from './dto/update-guideline.dto';
 import { DatabaseService } from '@/database/database.service';
@@ -23,9 +23,10 @@ export class GuidelineService {
 		return new Guideline(guideline);
 	}
 
-	async findAll(userId: string) {
+	async findAll(userId: string, mine: boolean = true) {
+		const where = mine ? { userId } : { OR: [{ public: true }, { userId }] };
 		const guidelines = await this.db.guideline.findMany({
-			where: { userId },
+			where,
 			orderBy: {
 				createdAt: 'desc'
 			}
@@ -33,9 +34,11 @@ export class GuidelineService {
 		return guidelines.map((guideline) => new Guideline(guideline));
 	}
 
-	async findOne(id: number, deep: boolean = false) {
+	async findOne(id: number, deep: boolean = false, userId?: string) {
+		if (deep && !userId) throw new BadRequestException('User ID is required for deep fetch');
+
 		const deepQuery = {
-			where: { id },
+			where: { id, OR: [{ public: true }, { userId }] },
 			include: {
 				recommendations: {
 					include: {
@@ -49,10 +52,15 @@ export class GuidelineService {
 			}
 		};
 
-		const guideline = await this.db.guideline.findUnique(deep ? deepQuery : { where: { id } });
-
-		if (!guideline) throw new NotFoundException(`Guideline with ID ${id} not found`);
-		return deep ? new ExpandedGuideline(guideline) : new Guideline(guideline);
+		if (deep) {
+			const guideline = await this.db.guideline.findFirst(deepQuery);
+			if (!guideline) throw new NotFoundException(`Guideline with ID ${id} not found`);
+			return new ExpandedGuideline(guideline as ExpandedGuideline);
+		} else {
+			const guideline = await this.db.guideline.findUnique({ where: { id, userId } });
+			if (!guideline) throw new NotFoundException(`Guideline with ID ${id} not found`);
+			return new Guideline(guideline);
+		}
 	}
 
 	async update(id: number, updateGuidelineDto: UpdateGuidelineDto) {

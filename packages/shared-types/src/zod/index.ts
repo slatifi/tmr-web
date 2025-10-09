@@ -96,6 +96,7 @@ export const GuidelineScalarFieldEnumSchema = z.enum([
 	'updatedAt',
 	'title',
 	'description',
+	'public',
 	'userId'
 ]);
 
@@ -354,6 +355,7 @@ export const GuidelineSchema = z.object({
 	updatedAt: z.coerce.date(),
 	title: z.string(),
 	description: z.string().nullable(),
+	public: z.boolean(),
 	userId: z.string()
 });
 

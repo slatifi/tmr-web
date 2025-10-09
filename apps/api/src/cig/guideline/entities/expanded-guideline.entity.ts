@@ -12,6 +12,7 @@ export class ExpandedGuideline {
 	description: string | null;
 	createdAt: Date;
 	updatedAt: Date;
+	public: boolean;
 
 	@Exclude()
 	@ApiHideProperty()
