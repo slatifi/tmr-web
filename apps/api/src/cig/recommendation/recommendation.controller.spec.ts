@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { Test, TestingModule } from '@nestjs/testing';
 import { RecommendationController } from './recommendation.controller';
 import { RecommendationService } from './recommendation.service';
@@ -7,6 +8,7 @@ import { createMockDatabaseService } from 'test/utils';
 import { recommendationCreateStub, recommendationStub } from 'test/fixtures/recommendation.stub';
 import { CreateRecommendationDto } from './dto/create-recommendation.dto';
 import { UpdateRecommendationDto } from './dto/update-recommendation.dto';
+import { sessionStub } from 'test/fixtures/session.stub';
 
 describe('RecommendationController', () => {
 	let controller: RecommendationController;
@@ -16,6 +18,7 @@ describe('RecommendationController', () => {
 		service = {
 			create: jest.fn(),
 			findAll: jest.fn(),
+			findAllByUser: jest.fn(),
 			findOne: jest.fn(),
 			update: jest.fn(),
 			remove: jest.fn()
@@ -54,6 +57,23 @@ describe('RecommendationController', () => {
 			await expect(
 				pipe.transform(dto, { type: 'body', metatype: CreateRecommendationDto })
 			).rejects.toThrow();
+		});
+	});
+
+	describe('findAllByUser', () => {
+		it('should return all recommendations for the authenticated user', async () => {
+			service.findAllByUser.mockResolvedValue([new Recommendation(recommendationStub)]);
+			const result = await controller.findAllByUser(sessionStub as any);
+			expect(result[0]).toBeInstanceOf(Recommendation);
+			expect(service.findAllByUser).toHaveBeenCalledWith(sessionStub.user.id);
+		});
+
+		it('should return empty array when user id is undefined', async () => {
+			service.findAllByUser.mockResolvedValue([]);
+			const mockSession = { ...sessionStub, user: { id: undefined } };
+			const result = await controller.findAllByUser(mockSession as any);
+			expect(result).toEqual([]);
+			expect(service.findAllByUser).toHaveBeenCalledWith(undefined);
 		});
 	});
 

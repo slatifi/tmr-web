@@ -35,6 +35,43 @@ describe('RecommendationService', () => {
 			await expect(service.create(recommendationCreateStub)).rejects.toThrow('Guideline not found');
 		});
 	});
+	describe('findAllByUser', () => {
+		it('should return all recommendations for a user', async () => {
+			db.recommendation.findMany.mockResolvedValue([recommendationStub]);
+			const result = await service.findAllByUser('user-123');
+			expect(result[0]).toBeInstanceOf(Recommendation);
+			expect(db.recommendation.findMany).toHaveBeenCalledWith({
+				where: { guideline: { userId: 'user-123' } }
+			});
+		});
+
+		it('should return an empty array if userId is null', async () => {
+			const result = await service.findAllByUser(null as any);
+			expect(result).toEqual([]);
+			expect(db.recommendation.findMany).not.toHaveBeenCalled();
+		});
+
+		it('should return an empty array if userId is undefined', async () => {
+			const result = await service.findAllByUser(undefined as any);
+			expect(result).toEqual([]);
+			expect(db.recommendation.findMany).not.toHaveBeenCalled();
+		});
+
+		it('should return an empty array if userId is not a string', async () => {
+			const result = await service.findAllByUser(123 as any);
+			expect(result).toEqual([]);
+			expect(db.recommendation.findMany).not.toHaveBeenCalled();
+		});
+
+		it('should return an empty array if no recommendations found for user', async () => {
+			db.recommendation.findMany.mockResolvedValue([]);
+			const result = await service.findAllByUser('user-999');
+			expect(result).toEqual([]);
+			expect(db.recommendation.findMany).toHaveBeenCalledWith({
+				where: { guideline: { userId: 'user-999' } }
+			});
+		});
+	});
 
 	describe('findAll', () => {
 		it('should return all recommendations for a guideline', async () => {
