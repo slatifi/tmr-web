@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { Test, TestingModule } from '@nestjs/testing';
 import { InteractionController } from './interaction.controller';
 import { InteractionService } from './interaction.service';
@@ -53,31 +54,16 @@ describe('InteractionController', () => {
 				.mockResolvedValueOnce({ ...expandedGuidelineStub, id: 2 } as ExpandedGuideline);
 			interactionService.findAll.mockResolvedValue(mockResult);
 
-			const result = await controller.findAll(ids, sessionStub);
+			const result = await controller.findAll(ids, sessionStub as any);
 
 			expect(guidelineService.findOne).toHaveBeenCalledTimes(2);
-			expect(guidelineService.findOne).toHaveBeenCalledWith(1, true);
-			expect(guidelineService.findOne).toHaveBeenCalledWith(2, true);
+			expect(guidelineService.findOne).toHaveBeenCalledWith(1, true, sessionStub.user.id);
+			expect(guidelineService.findOne).toHaveBeenCalledWith(2, true, sessionStub.user.id);
 			expect(interactionService.findAll).toHaveBeenCalledWith([
 				expandedGuidelineStub,
 				{ ...expandedGuidelineStub, id: 2 }
 			]);
 			expect(result).toBe(mockResult);
-		});
-
-		it('should filter out guidelines not owned by user', async () => {
-			const ids = [1, 2];
-			const mockResult = { interactions: [] };
-			const otherUserGuideline = { ...expandedGuidelineStub, userId: 'user-2' };
-
-			guidelineService.findOne
-				.mockResolvedValueOnce(expandedGuidelineStub)
-				.mockResolvedValueOnce(otherUserGuideline);
-			interactionService.findAll.mockResolvedValue(mockResult);
-
-			await controller.findAll(ids, sessionStub);
-
-			expect(interactionService.findAll).toHaveBeenCalledWith([expandedGuidelineStub]);
 		});
 
 		it('should filter out null guidelines', async () => {
@@ -90,7 +76,7 @@ describe('InteractionController', () => {
 				.mockResolvedValueOnce(null);
 			interactionService.findAll.mockResolvedValue(mockResult);
 
-			await controller.findAll(ids, sessionStub);
+			await controller.findAll(ids, sessionStub as any);
 
 			expect(interactionService.findAll).toHaveBeenCalledWith([expandedGuidelineStub]);
 		});
@@ -101,7 +87,7 @@ describe('InteractionController', () => {
 
 			interactionService.findAll.mockResolvedValue(mockResult);
 
-			const result = await controller.findAll(ids, sessionStub);
+			const result = await controller.findAll(ids, sessionStub as any);
 
 			expect(guidelineService.findOne).not.toHaveBeenCalled();
 			expect(interactionService.findAll).toHaveBeenCalledWith([]);
