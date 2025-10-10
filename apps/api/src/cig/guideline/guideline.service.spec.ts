@@ -11,7 +11,6 @@ import {
 } from 'test/fixtures/guideline.stub';
 
 import { mockReset } from 'jest-mock-extended';
-import { instanceToPlain } from 'class-transformer';
 import { createMockDatabaseService } from 'test/utils';
 
 describe('GuidelineService', () => {
@@ -100,14 +99,6 @@ describe('GuidelineService', () => {
 		it('should throw NotFoundException if not found', async () => {
 			db.guideline.findUnique.mockResolvedValue(null);
 			await expect(service.findOne(999, false, 'user-1')).rejects.toThrow(NotFoundException);
-		});
-
-		it('should filter out the userId field from the Prisma response', async () => {
-			db.guideline.findUnique.mockResolvedValue(guidelineStub as Guideline);
-			const result = await service.findOne(1, false, 'user-1');
-			expect(result).toBeInstanceOf(Guideline);
-			const filtered = instanceToPlain(result);
-			expect(filtered.userId).toBeUndefined();
 		});
 	});
 

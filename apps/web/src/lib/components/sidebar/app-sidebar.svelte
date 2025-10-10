@@ -9,6 +9,7 @@
 	import HammerIcon from '@lucide/svelte/icons/hammer';
 	import MergeIcon from '@lucide/svelte/icons/merge';
 	import SidebarUser from './sidebar-user.svelte';
+	import { EyeIcon } from '@lucide/svelte';
 
 	let {
 		ref = $bindable(null),
@@ -22,6 +23,12 @@
 			title: 'Dashboard',
 			icon: GaugeIcon,
 			url: '/dashboard'
+		},
+		{
+			title: 'Guideline Viewer',
+			icon: EyeIcon,
+			url: '/viewer',
+			matcher: /^\/viewer(\/.*)?$/
 		},
 		{
 			title: 'Guideline Builder',

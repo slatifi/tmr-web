@@ -1,6 +1,4 @@
-import { ApiHideProperty } from '@nestjs/swagger';
 import { Contribution, Recommendation, Transition } from '@prisma/client';
-import { Exclude } from 'class-transformer';
 
 export class ExpandedGuideline {
 	constructor(partial: Partial<ExpandedGuideline>) {
@@ -13,9 +11,6 @@ export class ExpandedGuideline {
 	createdAt: Date;
 	updatedAt: Date;
 	public: boolean;
-
-	@Exclude()
-	@ApiHideProperty()
 	userId: string;
 
 	recommendations: (Recommendation & {

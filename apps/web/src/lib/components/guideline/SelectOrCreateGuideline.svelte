@@ -4,7 +4,7 @@
 
 	import { invalidate } from '$app/navigation';
 
-	let { guidelines, selectedGuideline = $bindable(-1) } = $props();
+	let { guidelines, selectedGuideline = $bindable(-1), ref = $bindable(null) } = $props();
 
 	let createModalOpen = $state(false);
 	$effect(() => {
@@ -20,7 +20,7 @@
 	}
 </script>
 
-<div class="absolute top-4 left-4">
+<div class="absolute top-4 left-4" bind:this={ref}>
 	<CreateModal bind:open={createModalOpen} {handleCreation} />
 	<SelectGuideline
 		{guidelines}

@@ -14,6 +14,7 @@
 		withContributions?: boolean;
 		isLeftColumn?: boolean;
 		class?: string;
+		svelteFlow?: boolean;
 	}
 
 	let { selected = $bindable(null), data }: { selected?: number | null; data: Props } = $props();
@@ -25,7 +26,8 @@
 		editable = true,
 		withContributions = true,
 		isLeftColumn = true,
-		class: className = ''
+		class: className = '',
+		svelteFlow = false
 	}: Props = data;
 
 	let deleteContributionOpen = $state(false);
@@ -63,7 +65,7 @@
 			role="button"
 			tabindex="0"
 		>
-			{#if !editable}
+			{#if svelteFlow}
 				<Handle
 					type="source"
 					position={isLeftColumn ? Position.Right : Position.Left}
@@ -105,7 +107,8 @@
 							handleDelete: handleOpenDeleteContribution,
 							editable,
 							snomedDisplayMap,
-							isLeftColumn
+							isLeftColumn,
+							svelteFlow
 						}}
 					/>
 				{/each}

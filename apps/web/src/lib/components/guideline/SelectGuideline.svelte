@@ -12,6 +12,7 @@
 	interface Props {
 		guidelines: Guideline[];
 		class?: string;
+		ref?: HTMLDivElement | null;
 		single?: boolean;
 		selectedGuidelines: number[] | number;
 		title?: string;
@@ -25,6 +26,7 @@
 	let {
 		guidelines,
 		class: className = '',
+		ref = $bindable(null),
 		single = true,
 		selectedGuidelines = $bindable(single ? -1 : []),
 		title = 'Guidelines',
@@ -77,7 +79,7 @@
 	}
 </script>
 
-<Card.Root class="w-84 gap-4 p-4">
+<Card.Root class="w-84 gap-4 p-4" bind:ref>
 	<Card.Header class="p-0">
 		<Card.Title class="text-secondary-foreground">{title}</Card.Title>
 		<Card.Description>{description}</Card.Description>

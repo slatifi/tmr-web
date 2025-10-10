@@ -1,6 +1,4 @@
-import { ApiHideProperty } from '@nestjs/swagger';
 import { Guideline as GuidelineModel } from '@prisma/client';
-import { Exclude } from 'class-transformer';
 
 export class Guideline implements GuidelineModel {
 	constructor(partial: Partial<Guideline>) {
@@ -13,8 +11,5 @@ export class Guideline implements GuidelineModel {
 	createdAt: Date;
 	updatedAt: Date;
 	public: boolean;
-
-	@Exclude()
-	@ApiHideProperty()
 	userId: string;
 }

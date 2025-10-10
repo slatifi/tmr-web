@@ -91,6 +91,7 @@
 					i: index,
 					snomedDisplayMap: snomedDisplayMap || {},
 					editable: false,
+					svelteFlow: true,
 					isLeftColumn: columnIndex === 0,
 					class: 'w-60'
 				},

@@ -12,6 +12,7 @@
 		editable?: boolean;
 		snomedDisplayMap: Map<string, string>;
 		isLeftColumn?: boolean;
+		svelteFlow?: boolean;
 	}
 	let { data }: { data: Props } = $props();
 	let {
@@ -21,7 +22,8 @@
 		handleDelete,
 		editable = true,
 		snomedDisplayMap,
-		isLeftColumn = true
+		isLeftColumn = true,
+		svelteFlow = false
 	}: Props = data;
 </script>
 
@@ -29,7 +31,7 @@
 	<div
 		class="relative flex min-w-[180px] items-center justify-between gap-4 rounded-lg border border-gray-300 bg-white px-3 py-2 shadow-sm"
 	>
-		{#if !editable}
+		{#if svelteFlow}
 			<Handle
 				type="source"
 				position={isLeftColumn ? Position.Right : Position.Left}
