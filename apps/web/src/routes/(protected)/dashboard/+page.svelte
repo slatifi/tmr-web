@@ -2,22 +2,22 @@
 	import type { PageProps } from './$types';
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
-	import { Badge } from '$lib/components/ui/badge';
 	import { Separator } from '$lib/components/ui/separator';
 	import {
 		PlusIcon,
-		HammerIcon,
 		MergeIcon,
 		FileTextIcon,
-		TrendingUpIcon,
 		CalendarIcon,
-		TargetIcon
+		TargetIcon,
+		EyeIcon,
+		UsersIcon,
+		GlobeIcon
 	} from '@lucide/svelte';
 	import { goto } from '$app/navigation';
 	import { RecommendationStrengthSchema } from '@repo/shared-types';
 
 	const { data }: PageProps = $props();
-	const { guidelines, recommendations } = data;
+	const { guidelines, recommendations, publicGuidelines } = data;
 
 	let stats = $derived.by(() => {
 		const totalGuidelines = guidelines.length;
@@ -41,38 +41,44 @@
 			{ SHOULD: 0, NOT: 0 }
 		);
 
+		const publicGuidelinesCount = publicGuidelines?.length || 0;
+
 		return {
 			totalGuidelines,
 			recentActivity,
 			totalRecommendations,
-			strengthBreakdown
+			strengthBreakdown,
+			publicGuidelinesCount
 		};
 	});
 
 	// Get recent guidelines (last 3)
 	const recentGuidelines = $derived(guidelines.slice(0, 3));
+	const recentPublicGuidelines = $derived(publicGuidelines.slice(0, 3));
 </script>
 
 <div class="container mx-auto space-y-6 p-6">
 	<div class="space-y-2">
 		<h1 class="text-3xl font-bold tracking-tight">Hey, {data.user.name.split(' ')[0]}</h1>
-		<p class="text-muted-foreground">Welcome back! Here's an overview of your guidelines.</p>
+		<p class="text-muted-foreground">
+			Welcome back! Here's an overview of your guidelines and the community.
+		</p>
 	</div>
 
 	<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-		<!-- Guidelines Overview Card -->
+		<!-- My Guidelines Overview Card -->
 		<Card.Root class="col-span-full lg:col-span-1">
 			<Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">
-				<Card.Title class="text-sm font-medium">Guidelines Overview</Card.Title>
+				<Card.Title class="text-sm font-medium">My Guidelines</Card.Title>
 				<FileTextIcon class="h-4 w-4 text-muted-foreground" />
 			</Card.Header>
 			<Card.Content>
 				<div class="text-2xl font-bold">{stats.totalGuidelines}</div>
-				<p class="text-xs text-muted-foreground">Total guidelines created</p>
+				<p class="text-xs text-muted-foreground">Guidelines you've created</p>
 				<div class="mt-4 space-y-2">
 					<div class="flex items-center text-sm">
 						<TargetIcon class="mr-2 h-3 w-3" />
-						{stats.totalRecommendations} total recommendations
+						{stats.totalRecommendations} recommendations total
 					</div>
 					{#if stats.recentActivity}
 						<div class="flex items-center text-sm text-muted-foreground">
@@ -84,24 +90,31 @@
 			</Card.Content>
 		</Card.Root>
 
-		<!-- Recommendations Summary -->
+		<!-- Public Guidelines Discovery Card -->
 		<Card.Root class="col-span-full lg:col-span-1">
 			<Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">
-				<Card.Title class="text-sm font-medium">Recommendations Summary</Card.Title>
-				<TrendingUpIcon class="h-4 w-4 text-muted-foreground" />
+				<Card.Title class="text-sm font-medium">Community Guidelines</Card.Title>
+				<GlobeIcon class="h-4 w-4 text-muted-foreground" />
 			</Card.Header>
 			<Card.Content>
-				<div class="text-2xl font-bold">{stats.totalRecommendations}</div>
-				<p class="text-xs text-muted-foreground">Total recommendations across all guidelines</p>
+				<div class="text-2xl font-bold">{stats.publicGuidelinesCount}</div>
+				<p class="text-xs text-muted-foreground">Public guidelines available</p>
 				<div class="mt-4 space-y-2">
-					<div class="flex items-center justify-between">
-						<span class="text-sm">Should</span>
-						<Badge variant="default">{stats.strengthBreakdown.SHOULD}</Badge>
-					</div>
-					<div class="flex items-center justify-between">
-						<span class="text-sm">Should NOT</span>
-						<Badge variant="secondary">{stats.strengthBreakdown.NOT}</Badge>
-					</div>
+					{#if recentPublicGuidelines.length > 0}
+						<div class="space-y-1">
+							{#each recentPublicGuidelines as guideline (guideline.id)}
+								<button
+									class="flex cursor-pointer items-center text-xs hover:underline"
+									onclick={() => goto(`/viewer/${guideline.id}`)}
+								>
+									<UsersIcon class="mr-2 h-3 w-3 text-muted-foreground" />
+									<span class="truncate">{guideline.title}</span>
+								</button>
+							{/each}
+						</div>
+					{:else}
+						<p class="text-xs text-muted-foreground">No public guidelines yet</p>
+					{/if}
 				</div>
 			</Card.Content>
 		</Card.Root>
@@ -116,11 +129,15 @@
 					<PlusIcon class="mr-2 h-4 w-4" />
 					Create New Guideline
 				</Button>
-				<Button variant="outline" onclick={() => goto('builder')} class="w-full justify-start">
-					<HammerIcon class="mr-2 h-4 w-4" />
-					Open Builder
+				<Button variant="outline" onclick={() => goto('/viewer')} class="w-full justify-start">
+					<EyeIcon class="mr-2 h-4 w-4" />
+					Explore All Guidelines
 				</Button>
-				<Button variant="outline" onclick={() => goto('interactions')} class="w-full justify-start">
+				<Button
+					variant="outline"
+					onclick={() => goto('/interactions')}
+					class="w-full justify-start"
+				>
 					<MergeIcon class="mr-2 h-4 w-4" />
 					View Interactions
 				</Button>
@@ -130,7 +147,7 @@
 		<!-- Recent Guidelines Widget -->
 		<Card.Root class="col-span-full">
 			<Card.Header>
-				<Card.Title>Recent Guidelines</Card.Title>
+				<Card.Title>Your Recent Guidelines</Card.Title>
 				<Card.Description>Your most recently created or updated guidelines</Card.Description>
 			</Card.Header>
 			<Card.Content>
