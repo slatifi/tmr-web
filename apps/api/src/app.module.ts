@@ -4,7 +4,8 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 
 import { AuthModule, AuthGuard } from '@thallesp/nestjs-better-auth';
-import { auth } from './auth';
+import { authAsyncFactory } from './auth';
+
 import { DatabaseModule } from './database/database.module';
 import { CigModule } from './cig/cig.module';
 import { SnomedModule } from './snomed/snomed.module';
@@ -13,7 +14,7 @@ import { InteractionModule } from './interaction/interaction.module';
 @Module({
 	imports: [
 		ConfigModule.forRoot({ isGlobal: true }),
-		AuthModule.forRoot(auth),
+		AuthModule.forRootAsync(authAsyncFactory),
 		DatabaseModule,
 		CigModule,
 		SnomedModule,
