@@ -56,7 +56,10 @@
 	/>
 	{#key data.guideline}
 		{#if data.guideline}
-			<div style:margin-left={toolbarRef?.clientWidth + 'px'} class="h-full p-4 pl-6">
+			<div
+				style:margin-left={toolbarRef?.clientWidth + 'px'}
+				class="h-full max-h-[90vh] overflow-scroll p-4 pl-6"
+			>
 				<div class="grid max-w-6xl grid-cols-2 gap-20">
 					<!-- Left Column -->
 					<div class="ml-auto w-fit">
@@ -66,8 +69,7 @@
 									snomedDisplayMap: data.snomedDisplayMap,
 									recommendation: rec,
 									i: 2 * i,
-									isLeftColumn: true,
-									class: 'w-full'
+									isLeftColumn: true
 								}}
 								bind:selected={selectedRecommendation}
 							/>
@@ -82,8 +84,7 @@
 									snomedDisplayMap: data.snomedDisplayMap,
 									recommendation: rec,
 									i: 2 * i + 1,
-									isLeftColumn: false,
-									class: 'w-full'
+									isLeftColumn: false
 								}}
 								bind:selected={selectedRecommendation}
 							/>

@@ -75,7 +75,10 @@
 	{/if}
 	{#key data.guideline}
 		{#if data.guideline}
-			<div style:margin-left={selectRef?.clientWidth + 'px'} class="h-full p-4 pl-6">
+			<div
+				style:margin-left={selectRef?.clientWidth + 'px'}
+				class="h-full max-h-[90vh] overflow-scroll p-4 pl-6"
+			>
 				<div class="grid max-w-6xl grid-cols-2 gap-20">
 					<!-- Left Column -->
 					<div class="ml-auto w-fit">
@@ -87,8 +90,7 @@
 									i: 2 * i,
 									isLeftColumn: true,
 									svelteFlow: false,
-									editable: false,
-									class: 'w-full'
+									editable: false
 								}}
 							/>
 						{/each}
@@ -104,8 +106,7 @@
 									i: 2 * i + 1,
 									isLeftColumn: false,
 									editable: false,
-									svelteFlow: false,
-									class: 'w-full'
+									svelteFlow: false
 								}}
 							/>
 						{/each}

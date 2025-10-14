@@ -23,6 +23,7 @@
 	let recommendations: RecommendationWithRelations[] = $state([]);
 	let interactions: { [interactionType: string]: Interaction[] } = $state({});
 	let snomedDisplayMap: Map<string, string> = $state(new Map());
+	let selectRef: HTMLDivElement | null = $state(null);
 
 	async function loadSelectedGuidelines() {
 		const guidelines: GuidelineWithRelations[] = [];
@@ -92,8 +93,7 @@
 					snomedDisplayMap: snomedDisplayMap || {},
 					editable: false,
 					svelteFlow: true,
-					isLeftColumn: columnIndex === 0,
-					class: 'w-60'
+					isLeftColumn: columnIndex === 0
 				},
 				draggable: true
 			});
@@ -195,6 +195,7 @@
 		<SelectGuideline
 			guidelines={data?.guidelines}
 			bind:selectedGuidelines
+			bind:ref={selectRef}
 			onSubmit={loadSelectedGuidelines}
 			disabled={loading}
 			single={false}
@@ -251,6 +252,7 @@
 				{nodeTypes}
 				{edgeTypes}
 				fitView
+				fitViewOptions={{ padding: { left: `${(selectRef?.clientWidth ?? 0) + 20}px` } }}
 				minZoom={0.5}
 				maxZoom={1}
 				style="width: 100%; height: 100%; background: none;"
