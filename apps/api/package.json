@@ -81,6 +81,9 @@
 			"@/(.*)": "<rootDir>/$1",
 			"test/(.*)": "<rootDir>/../test/$1"
 		},
+		"transformIgnorePatterns": [
+			"/node_modules/(?!.*(better-auth|@noble|jose)/)"
+		],
 		"coverageDirectory": "../coverage",
 		"testEnvironment": "node"
 	}

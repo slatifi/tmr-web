@@ -1,14 +1,15 @@
 {
-  "moduleFileExtensions": ["js", "json", "ts"],
-  "rootDir": ".",
-  "testEnvironment": "node",
-  "testRegex": ".e2e-spec.ts$",
-  "transform": {
-    "^.+\\.(t|j)s$": "ts-jest"
-  }, 
-  "moduleNameMapper": {
-    "^(\\.{1,2}/.*)\\.js$": "$1",
-    "@/(.*)": "<rootDir>/../src/$1"
-  }, 
-  "setupFiles": ["<rootDir>/setupEnv.ts"]
+	"moduleFileExtensions": ["js", "json", "ts"],
+	"rootDir": ".",
+	"testEnvironment": "node",
+	"testRegex": ".e2e-spec.ts$",
+	"transform": {
+		"^.+\\.(t|j)s$": "ts-jest"
+	},
+	"transformIgnorePatterns": ["/node_modules/(?!.*(better-auth|@noble|jose)/)"],
+	"moduleNameMapper": {
+		"^(\\.{1,2}/.*)\\.js$": "$1",
+		"@/(.*)": "<rootDir>/../src/$1"
+	},
+	"setupFiles": ["<rootDir>/setupEnv.ts"]
 }
