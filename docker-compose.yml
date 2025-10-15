@@ -1,14 +1,39 @@
 services:
+  tmrw_web:
+    image: tmrw_web:latest
+    container_name: tmrw_web
+    restart: unless-stopped
+    ports:
+      - "8000:3000"
+    depends_on:
+      - db
+    env_file:
+      - .env
+    environment:
+      - PUBLIC_SNOMED_BASE_URL=$SNOMED_BASE_URL
+
+  tmrw_api:
+    image: tmrw_api:latest
+    container_name: tmrw_api
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-tmrw}:${POSTGRES_PASSWORD:-example_password}@tmrw_db:5432/${POSTGRES_DB:-tmrwdb}
+      - BETTER_AUTH_URL=$TRUSTED_ORIGINS
+
   db:
     image: postgres:latest
     container_name: tmrw_db
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-example_user}
+      POSTGRES_USER: ${POSTGRES_USER:-tmrw}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-example_password}
       POSTGRES_DB: ${POSTGRES_DB:-tmrwdb}
-    ports:
-      - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
 

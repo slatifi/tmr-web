@@ -11,6 +11,7 @@
 	import CreateContributionModal from './CreateContributionModal.svelte';
 	import { tick } from 'svelte';
 	import { EyeIcon, LockIcon } from '@lucide/svelte';
+	import { fetchWithCredentials } from '$lib/utils';
 
 	interface Props {
 		guideline: Guideline | null;
@@ -69,7 +70,7 @@
 		error = null;
 
 		try {
-			const res = await fetch(`/api/guideline/${guideline.id}/`, {
+			const res = await fetchWithCredentials(`/api/guideline/${guideline.id}/`, {
 				method: 'PATCH',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ public: !guideline.public })
@@ -92,7 +93,7 @@
 		error = null;
 
 		try {
-			const res = await fetch(`/api/guideline/${guideline.id}`, {
+			const res = await fetchWithCredentials(`/api/guideline/${guideline.id}`, {
 				method: 'PATCH',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(data)

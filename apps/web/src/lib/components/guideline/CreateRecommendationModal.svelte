@@ -13,6 +13,7 @@
 	} from '@repo/shared-types';
 	import { invalidate } from '$app/navigation';
 	import { titleCase } from './utils';
+	import { fetchWithCredentials } from '$lib/utils';
 
 	let { open = $bindable(false), guidelineId } = $props();
 
@@ -43,7 +44,7 @@
 		error = null;
 
 		try {
-			const res = await fetch('/api/recommendation', {
+			const res = await fetchWithCredentials('/api/recommendation', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({

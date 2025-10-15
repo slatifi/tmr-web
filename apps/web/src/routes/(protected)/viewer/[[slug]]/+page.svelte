@@ -77,7 +77,7 @@
 		{#if data.guideline}
 			<div
 				style:margin-left={selectRef?.clientWidth + 'px'}
-				class="h-full max-h-[90vh] overflow-scroll p-4 pl-6"
+				class="h-full max-h-[90vh] overflow-y-auto p-4 pl-6"
 			>
 				<div class="grid max-w-6xl grid-cols-2 gap-20">
 					<!-- Left Column -->

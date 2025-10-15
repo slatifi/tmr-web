@@ -2,14 +2,15 @@ import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 import type { GuidelineWithRelations } from '@repo/shared-types';
 import { getSnomedNames } from '$lib/stores/SnomedStore.svelte';
+import { fetchWithCredentials } from '$lib/utils';
 
-export const load: PageLoad = async ({ fetch, depends, params }) => {
+export const load: PageLoad = async ({ depends, params }) => {
 	let guideline: GuidelineWithRelations | null = null;
 
 	let snomedDisplayMap: Map<string, string> = new Map();
 	if (params.slug) {
 		try {
-			const res = await fetch(`/api/guideline/deep/${params.slug}`);
+			const res = await fetchWithCredentials(`/api/guideline/deep/${params.slug}`);
 			if (res.ok) {
 				guideline = await res.json();
 			} else if (res.status === 404) {

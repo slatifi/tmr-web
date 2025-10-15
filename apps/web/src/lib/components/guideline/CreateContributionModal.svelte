@@ -15,6 +15,7 @@
 	import { invalidate } from '$app/navigation';
 	import { titleCase, calculateDerivative } from './utils';
 	import SnomedSelect from './SnomedSelect.svelte';
+	import { fetchWithCredentials } from '$lib/utils';
 
 	let { open = $bindable(false), recommendationId } = $props();
 
@@ -75,7 +76,7 @@
 		error = null;
 
 		try {
-			const res = await fetch('/api/contribution/with-transition', {
+			const res = await fetchWithCredentials('/api/contribution/with-transition', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({

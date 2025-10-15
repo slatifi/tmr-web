@@ -3,6 +3,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Loader2Icon, Trash2Icon } from '@lucide/svelte';
 	import { invalidate } from '$app/navigation';
+	import { fetchWithCredentials } from '$lib/utils';
 
 	let {
 		open = $bindable(false),
@@ -30,7 +31,7 @@
 		error = null;
 
 		try {
-			const res = await fetch(`/api/${resourceType}/${resourceId}`, {
+			const res = await fetchWithCredentials(`/api/${resourceType}/${resourceId}`, {
 				method: 'DELETE'
 			});
 			if (!res.ok) {

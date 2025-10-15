@@ -4,6 +4,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
+	import { fetchWithCredentials } from '$lib/utils';
 
 	let { open = $bindable(false), handleCreation } = $props();
 
@@ -25,7 +26,7 @@
 		error = null;
 
 		try {
-			const res = await fetch('/api/guideline', {
+			const res = await fetchWithCredentials('/api/guideline', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ title: title.trim(), description: description.trim() })

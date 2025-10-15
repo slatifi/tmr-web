@@ -1,12 +1,13 @@
 import type { Guideline, Recommendation } from '@repo/shared-types';
 import type { PageLoad } from './$types';
+import { fetchWithCredentials } from '$lib/utils';
 
-export const load: PageLoad = async ({ fetch, parent }) => {
-	const guidelines: Guideline[] = await fetch('/api/guideline?mine=false')
+export const load: PageLoad = async ({ parent }) => {
+	const guidelines: Guideline[] = await fetchWithCredentials('/api/guideline?mine=false')
 		.then((res) => res.json())
 		.catch((err) => console.error(err));
 
-	const recommendations: Recommendation[] = await fetch('/api/recommendation')
+	const recommendations: Recommendation[] = await fetchWithCredentials('/api/recommendation')
 		.then((res) => res.json())
 		.catch((err) => console.error(err));
 

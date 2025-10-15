@@ -1,8 +1,9 @@
+import { fetchWithCredentials } from '$lib/utils';
 import type { PageLoad } from './$types';
 import type { Guideline } from '@repo/shared-types';
 
-export const load: PageLoad = async ({ fetch, depends }) => {
-	const guidelines = await fetch('/api/guideline?mine=false')
+export const load: PageLoad = async ({ depends }) => {
+	const guidelines = await fetchWithCredentials('/api/guideline?mine=false')
 		.then((res) => res.json())
 		.catch((err) => console.error(err));
 

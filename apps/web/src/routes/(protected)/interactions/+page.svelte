@@ -8,6 +8,7 @@
 	import InteractionEdge from '$lib/components/guideline/InteractionEdge.svelte';
 	import { getSnomedNames } from '$lib/stores/SnomedStore.svelte';
 	import { SvelteMap } from 'svelte/reactivity';
+	import { fetchWithCredentials } from '$lib/utils';
 
 	interface Interaction {
 		entity: 'recommendation' | 'contribution';
@@ -31,7 +32,7 @@
 		loaded = false;
 
 		for (const id of selectedGuidelines) {
-			const res = await fetch(`/api/guideline/deep/${id}`);
+			const res = await fetchWithCredentials(`/api/guideline/deep/${id}`);
 			if (res.ok) {
 				const guideline = await res.json();
 				guidelines.push(guideline as GuidelineWithRelations);
@@ -39,7 +40,7 @@
 		}
 
 		// Load interactions with url params as comma separated guideline ids
-		const res = await fetch(`/api/interaction?ids=${selectedGuidelines.join(',')}`);
+		const res = await fetchWithCredentials(`/api/interaction?ids=${selectedGuidelines.join(',')}`);
 		if (res.ok) {
 			interactions = await res.json();
 			recommendations = guidelines.flatMap((g) => g.recommendations);

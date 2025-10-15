@@ -1,4 +1,5 @@
-import { PUBLIC_SNOMED_BASE_URL } from '$env/static/public';
+import { env } from '$env/dynamic/public';
+import { fetchWithCredentials } from '$lib/utils';
 import { createLocalStorageMap } from './localStorage.svelte';
 
 let snomedToken: string = $state('');
@@ -6,7 +7,7 @@ const snomedNameCache: Map<string, string> = createLocalStorageMap('snomedNameCa
 
 export async function getSnomedToken(): Promise<string> {
 	if (!snomedToken) {
-		const res = await fetch('/api/snomed/auth');
+		const res = await fetchWithCredentials('/api/snomed/auth');
 		const data = await res.json();
 		snomedToken = data.access_token;
 		const expiresIn = data.expires_in; // in seconds
@@ -43,7 +44,7 @@ export type SnomedCodeDisplayLookupResponse = {
 
 export async function fetchSnomedData<T>(endpoint: string, backoff: boolean = false): Promise<T> {
 	const token = await getSnomedToken();
-	const res = await fetch(PUBLIC_SNOMED_BASE_URL + endpoint, {
+	const res = await fetch(env.PUBLIC_SNOMED_BASE_URL + endpoint, {
 		headers: {
 			Authorization: `Bearer ${token}`
 		}
