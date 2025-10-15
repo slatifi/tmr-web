@@ -1,0 +1,9 @@
+http://localhost {
+    handle /api/* {
+        reverse_proxy tmr-web_api:3000
+    }
+
+    handle {
+        reverse_proxy tmr-web_web:3000
+    }
+}

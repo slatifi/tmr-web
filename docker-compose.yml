@@ -11,6 +11,7 @@ services:
       - .env
     environment:
       - PUBLIC_SNOMED_BASE_URL=$SNOMED_BASE_URL
+      - PUBLIC_API_BASE_URL=$BASE_URL
 
   tmrw_api:
     image: tmrw_api:latest
@@ -24,7 +25,20 @@ services:
       - .env
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER:-tmrw}:${POSTGRES_PASSWORD:-example_password}@tmrw_db:5432/${POSTGRES_DB:-tmrwdb}
-      - BETTER_AUTH_URL=$TRUSTED_ORIGINS
+      - BETTER_AUTH_URL=$BASE_URL
+      - TRUSTED_ORIGINS=$BASE_URL
+
+  proxy:
+    image: caddy:latest
+    container_name: tmrw_proxy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - tmrw_web
+      - tmrw_api
+    volumes:
+      - ./proxy/Caddyfile:/etc/caddy/Caddyfile
 
   db:
     image: postgres:latest
