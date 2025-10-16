@@ -1,7 +1,7 @@
 services:
-  tmrw_web:
-    image: tmrw_web:latest
-    container_name: tmrw_web
+  tmr-web_web:
+    image: ghcr.io/slatifi/tmr-web_web:latest
+    container_name: tmr-web_web
     restart: unless-stopped
     ports:
       - "8000:3000"
@@ -13,9 +13,9 @@ services:
       - PUBLIC_SNOMED_BASE_URL=$SNOMED_BASE_URL
       - PUBLIC_API_BASE_URL=$BASE_URL
 
-  tmrw_api:
-    image: tmrw_api:latest
-    container_name: tmrw_api
+  tmr-web_api:
+    image: ghcr.io/slatifi/tmr-web_api:latest
+    container_name: tmr-web_api
     restart: unless-stopped
     ports:
       - "3000:3000"
@@ -24,19 +24,19 @@ services:
     env_file:
       - .env
     environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER:-tmrw}:${POSTGRES_PASSWORD:-example_password}@tmrw_db:5432/${POSTGRES_DB:-tmrwdb}
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-tmr}:${POSTGRES_PASSWORD:-example_password}@tmr-web_db:5432/${POSTGRES_DB:-tmrdb}
       - BETTER_AUTH_URL=$BASE_URL
       - TRUSTED_ORIGINS=$BASE_URL
 
   proxy:
     image: caddy:latest
-    container_name: tmrw_proxy
+    container_name: tmr-web_proxy
     restart: unless-stopped
     ports:
       - "80:80"
     depends_on:
-      - tmrw_web
-      - tmrw_api
+      - tmr-web_web
+      - tmr-web_api
     volumes:
       - ./proxy/Caddyfile:/etc/caddy/Caddyfile
       - caddy_data:/data
@@ -44,12 +44,12 @@ services:
 
   db:
     image: postgres:latest
-    container_name: tmrw_db
+    container_name: tmr-web_db
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-tmrw}
+      POSTGRES_USER: ${POSTGRES_USER:-tmr}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-example_password}
-      POSTGRES_DB: ${POSTGRES_DB:-tmrwdb}
+      POSTGRES_DB: ${POSTGRES_DB:-tmrdb}
     volumes:
       - db_data:/var/lib/postgresql/data
 

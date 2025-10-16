@@ -1,0 +1,160 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: 'Release type (patch, minor, major)'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+jobs:
+  prepare-release:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.set-version.outputs.version }}
+    steps:
+      - name: Check actor is repo owner
+        if: ${{ github.actor != github.repository_owner }}
+        run: |
+          echo "This workflow can only be triggered by the repository owner."
+          exit 1
+
+      - name: Generate a git app token
+        id: generate_token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.RELEASER_APP_ID }}
+          private-key: ${{ secrets.RELEASER_APP_KEY }}
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ steps.generate_token.outputs.token }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: latest
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Determine next version
+        id: set-version
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          CURRENT_VERSION=$(jq -r '.version' package.json)
+
+          case "${{ github.event.inputs.release_type }}" in
+            patch)
+              NEXT_VERSION=$(pnpx semver $CURRENT_VERSION -i patch)
+              ;;
+            minor)
+              NEXT_VERSION=$(pnpx semver $CURRENT_VERSION -i minor)
+              ;;
+            major)
+              NEXT_VERSION=$(pnpx semver $CURRENT_VERSION -i major)
+              ;;
+          esac
+
+          echo "Current version: $CURRENT_VERSION"
+          echo "Next version: $NEXT_VERSION"
+          echo "version=$NEXT_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Update versions in package.json files
+        run: |
+          NEW_VERSION="${{ steps.set-version.outputs.version }}"
+
+          # Update root package.json
+          jq ".version = \"$NEW_VERSION\"" package.json > package.json.tmp && mv package.json.tmp package.json
+
+          # Update apps/web/package.json
+          jq ".version = \"$NEW_VERSION\"" apps/web/package.json > apps/web/package.json.tmp && mv apps/web/package.json.tmp apps/web/package.json
+
+          # Update apps/api/package.json
+          jq ".version = \"$NEW_VERSION\"" apps/api/package.json > apps/api/package.json.tmp && mv apps/api/package.json.tmp apps/api/package.json
+
+      - name: Generate changelog
+        run: |
+          pnpx conventional-changelog-cli -p conventionalcommits -i CHANGELOG.md -s
+
+      - name: Commit version updates and changelog
+        run: |
+          git add package.json apps/*/package.json CHANGELOG.md
+          git commit -m "chore(release): v${{ steps.set-version.outputs.version }} [skip ci]"
+          git tag -a "v${{ steps.set-version.outputs.version }}" -m "Release v${{ steps.set-version.outputs.version }}"
+          git push --follow-tags
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: "v${{ steps.set-version.outputs.version }}"
+          name: "v${{ steps.set-version.outputs.version }}"
+          body_path: CHANGELOG.md
+          draft: false
+          prerelease: false
+          token: ${{ steps.generate_token.outputs.token }}
+
+  build-and-push-images:
+    needs: prepare-release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: "v${{ needs.prepare-release.outputs.version }}"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push API image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          target: api
+          platforms: linux/amd64,linux/arm64
+          tags: |
+            ghcr.io/slatifi/tmr-web_api:latest
+            ghcr.io/slatifi/tmr-web_api:v${{ needs.prepare-release.outputs.version }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and push Web image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          target: web
+          platforms: linux/amd64,linux/arm64
+          tags: |
+            ghcr.io/slatifi/tmr-web_web:latest
+            ghcr.io/slatifi/tmr-web_web:v${{ needs.prepare-release.outputs.version }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

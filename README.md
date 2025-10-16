@@ -12,7 +12,9 @@
 
 <p align="center">
     <img src="design/interactions.png" alt="Interactions" width="600"/>
-    <p align="center" style="font-style:italic">Example of detected interactions between recommendations from different guidelines</span>
+    <p align="center">
+        <i>Example of detected interactions between recommendations from different guidelines</i>
+    </p>
 </p>
 
 ## Table of Contents
@@ -46,13 +48,15 @@ Additionally, documentation is provided for the API endpoints, which can be acce
 
 The application can be deployed using Docker. Ensure you have Docker and Docker Compose installed on your machine. Additionally, there are **two prerequisites** that need to be fulfilled before deploying the application:
 
-1. **SNOMED server**: The application requires a SNOMED server to function correctly. You can either use a self-hosted server, like [Snowstorm](https://github.com/IHTSDO/snowstorm), or a public SNOMED server, such as the one provided by [NHS Digital](https://termbrowser.nhs.uk/snowstorm/snomed-ct).
+1. **SNOMED server**: The application requires a SNOMED server to function correctly. You can either use a self-hosted server, like [Snowstorm](https://github.com/IHTSDO/snowstorm), or a public SNOMED server, such as the one provided by [NHS Digital](https://termbrowser.nhs.uk/).
 If you choose to use a self-hosted server, ensure it is running and accessible before proceeding with the deployment.
 2. **Resend API key**: The application uses the [Resend](https://resend.com/) service to send emails. You need to sign up for an account on Resend and obtain an API key. 
 
 Once you have fulfilled the prerequisites, follow these steps to deploy the application:
 
-1. Copy the `docker-compose.yml` and `.env.sample` files to your local machine.
+1. Copy the the following files to your local machine:
+   - `docker-compose.yml` and `.env.sample` to your project's root directory `./`
+   - `proxy/Caddyfile` to `./proxy/`
 2. Rename the `.env.sample` file to `.env`.
 3. Open the `.env` file and configure the environment variables as needed. You DON'T need to change the compose file. 
 4. Run the following command to start the application and it should be accessible at `http://localhost`:
