@@ -83,6 +83,14 @@
 			// Estimate number of lines for action text (assuming 29 chars per line based on fixed width)
 			const lines = Math.ceil((snomedDisplayMap.get(rec.action)?.length || 0) / 29) || 1;
 
+			// Estimate number of lines for contributions (assuming 14 chars per line based on fixed width)
+			const contributionsLines =
+				Math.ceil(
+					rec.contributions?.reduce((sum, c) => {
+						return sum + (snomedDisplayMap.get(c.transition?.property || '')?.length || 0);
+					}, 0) / 14
+				) || 0;
+
 			// Add recommendation node
 			nodes.push({
 				id: `rec-${rec.id}`,
@@ -100,7 +108,8 @@
 			});
 
 			// Estimate recommendation node height
-			const estimatedRecHeight = (rec.contributions?.length || 0) * 60 + lines * 15;
+			const estimatedRecHeight =
+				(rec.contributions?.length || 0) * 56 + lines * 15 + contributionsLines * 2;
 			columnHeights[columnIndex] += estimatedRecHeight + nodeSpacing;
 		});
 
