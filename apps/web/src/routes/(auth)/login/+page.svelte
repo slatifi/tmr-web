@@ -58,7 +58,7 @@
 		{/if}
 		{#if data?.registered}
 			<div class="mb-5 rounded-md bg-sidebar-accent p-4 text-sm text-sidebar-accent-foreground">
-				You have successfully registered. Please login with your credentials.
+				You have successfully registered. Please verify your email prior to logging in.
 			</div>
 		{/if}
 		{#if data?.redirect}

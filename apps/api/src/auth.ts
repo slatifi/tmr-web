@@ -21,9 +21,27 @@ export const authAsyncFactory = {
 				provider: 'postgresql'
 			}),
 			trustedOrigins,
+			emailVerification: {
+				sendOnSignUp: true,
+				autoSignInAfterVerification: true,
+				sendVerificationEmail: async ({ user, url }) => {
+					await resend.emails.send({
+						from: `TMR-W <${sendEmail}>`,
+						to: user.email,
+						subject: 'Verify your email',
+						html: `<p>Hi ${user.name},</p>
+					<p>Click the link below to verify your email address:</p>
+					<a href="${url}">Verify Email</a>
+					<p>If you did not create an account, please ignore this email.</p>
+					<p>Thanks,</p>
+					<p>TMR Team</p>`
+					});
+				}
+			},
 			emailAndPassword: {
 				enabled: true,
 				autoSignIn: false,
+				requireEmailVerification: true,
 				sendResetPassword: async ({ user, url }) => {
 					await resend.emails.send({
 						from: `TMR-W <${sendEmail}>`,
