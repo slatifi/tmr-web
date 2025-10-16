@@ -40,6 +40,8 @@ At the moment, the application provides the following features pertaining to gui
 - **Sharing and collaboration**: Users can share guidelines with other healthcare professionals, facilitating collaboration and knowledge exchange. The _guideline viewer_ allows users to view guidelines that are not owned by them.
 - **Interaction detection**: The platform automatically detects potential conflicts between guidelines based on their contributions and the SNOMED CT terminology.
 
+Additionally, documentation is provided for the API endpoints, which can be accessed at `/docs/` once the application is running. 
+
 ## Deployment
 
 The application can be deployed using Docker. Ensure you have Docker and Docker Compose installed on your machine. Additionally, there are **two prerequisites** that need to be fulfilled before deploying the application:
