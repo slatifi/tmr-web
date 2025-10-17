@@ -219,6 +219,7 @@
 			<CreateRecommendationModal
 				bind:open={createRecommendationModalOpen}
 				guidelineId={guideline?.id}
+				onCreate={(id: number) => (recommendationId = id)}
 			/>
 			<!-- Delete button -->
 			<Button

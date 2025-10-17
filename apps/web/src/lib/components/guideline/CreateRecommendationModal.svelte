@@ -15,7 +15,7 @@
 	import { titleCase } from './utils';
 	import { fetchWithCredentials } from '$lib/utils';
 
-	let { open = $bindable(false), guidelineId } = $props();
+	let { open = $bindable(false), guidelineId, onCreate } = $props();
 
 	let action = $state('');
 	let actionPrefix = $state('');
@@ -64,7 +64,9 @@
 
 			invalidate('app:guideline');
 			open = false;
+			onCreate(data.id);
 			action = '';
+			actionPrefix = '';
 			strength = '';
 		} catch (err) {
 			error = 'An unexpected error occurred. Please try again.';

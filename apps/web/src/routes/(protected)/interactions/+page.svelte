@@ -109,7 +109,7 @@
 
 			// Estimate recommendation node height
 			const estimatedRecHeight =
-				(rec.contributions?.length || 0) * 56 + lines * 15 + contributionsLines * 2;
+				(rec.contributions?.length || 0) * 50 + lines * 15 + contributionsLines * 15;
 			columnHeights[columnIndex] += estimatedRecHeight + nodeSpacing;
 		});
 
