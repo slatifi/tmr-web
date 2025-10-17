@@ -1,4 +1,4 @@
-http://localhost {
+http://:80 {
     handle_path /docs/* {
         rewrite * /swagger{path}
         reverse_proxy tmr-web_api:3000
