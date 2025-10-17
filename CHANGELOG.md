@@ -1,3 +1,8 @@
+## [1.0.2](https://github.com/slatifi/tmrw/compare/v1.0.1...v1.0.2) (2025-10-17)
+
+### Bug Fixes
+
+* **web:** use better spacing for multiline contributions ([23b5c81](https://github.com/slatifi/tmrw/commit/23b5c816837bee36c80a6b4438191c7529cd4339))
 ## [1.0.1](https://github.com/slatifi/tmrw/compare/v1.0.0...v1.0.1) (2025-10-17)
 
 ### Bug Fixes
