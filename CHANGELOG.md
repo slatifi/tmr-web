@@ -1,3 +1,12 @@
+## [1.0.1](https://github.com/slatifi/tmrw/compare/v1.0.0...v1.0.1) (2025-10-17)
+
+### Bug Fixes
+
+* **proxy:** update Caddy to use catch-all ([4732a01](https://github.com/slatifi/tmrw/commit/4732a01128608d9806959ad447f20ec6367b3625))
+
+### Performance Improvements
+
+* **proxy:** add package install caching to speed to future builds ([12b7556](https://github.com/slatifi/tmrw/commit/12b755665d2603f183a561210da3c852bf24a5a4))
 ## 1.0.0 (2025-10-16)
 
 ### Features
