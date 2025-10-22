@@ -1,3 +1,10 @@
+## [1.1.0](https://github.com/slatifi/tmrw/compare/v1.0.2...v1.1.0) (2025-10-22)
+
+### Features
+
+* **api:** add admin plugin to db ([435d48c](https://github.com/slatifi/tmrw/commit/435d48c5fd185c5901326b871a492e11a4e2f0f8))
+* **web:** admin panel for managing users ([6e6a013](https://github.com/slatifi/tmrw/commit/6e6a013d5f774915845d6d5e58f15a80ed646399))
+* **web:** prevent actions on your own user ([ec59617](https://github.com/slatifi/tmrw/commit/ec5961797191b92f976fef43d2a5378d0e9a041a))
 ## [1.0.2](https://github.com/slatifi/tmrw/compare/v1.0.1...v1.0.2) (2025-10-17)
 
 ### Bug Fixes
