@@ -21,6 +21,10 @@ export const UserScalarFieldEnumSchema = z.enum([
 	'email',
 	'emailVerified',
 	'image',
+	'role',
+	'banned',
+	'banReason',
+	'banExpires',
 	'createdAt',
 	'updatedAt'
 ]);
@@ -31,6 +35,7 @@ export const SessionScalarFieldEnumSchema = z.enum([
 	'token',
 	'createdAt',
 	'updatedAt',
+	'impersonatedBy',
 	'ipAddress',
 	'userAgent',
 	'userId'
@@ -136,6 +141,10 @@ export const UserSchema = z.object({
 	email: z.string(),
 	emailVerified: z.boolean(),
 	image: z.string().nullable(),
+	role: z.string().nullable(),
+	banned: z.boolean().nullable(),
+	banReason: z.string().nullable(),
+	banExpires: z.coerce.date().nullable(),
 	createdAt: z.coerce.date(),
 	updatedAt: z.coerce.date()
 });
@@ -171,6 +180,7 @@ export const SessionSchema = z.object({
 	token: z.string(),
 	createdAt: z.coerce.date(),
 	updatedAt: z.coerce.date(),
+	impersonatedBy: z.string().nullable(),
 	ipAddress: z.string().nullable(),
 	userAgent: z.string().nullable(),
 	userId: z.string()

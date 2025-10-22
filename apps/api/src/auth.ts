@@ -1,4 +1,5 @@
 import { betterAuth, BetterAuthOptions } from 'better-auth';
+import { admin } from 'better-auth/plugins';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { PrismaClient } from '@prisma/client';
 import { Resend } from 'resend';
@@ -16,11 +17,14 @@ export const authAsyncFactory = {
 			'http://localhost:5173'
 		];
 
+		const adminUserIds = configService.get<string>('ADMIN_USER_IDS')?.split(',') ?? [];
+
 		const options: BetterAuthOptions = {
 			database: prismaAdapter(prisma, {
 				provider: 'postgresql'
 			}),
 			trustedOrigins,
+			plugins: [admin({ adminUserIds })],
 			emailVerification: {
 				sendOnSignUp: true,
 				autoSignInAfterVerification: true,

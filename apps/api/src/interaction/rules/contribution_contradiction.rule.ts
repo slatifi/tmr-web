@@ -10,7 +10,6 @@ export class ContributionContradictionInteractionRule implements InteractionRule
 
 	define(z3: Context, solver: Solver, vars: InteractionVariables, data: EncodedData) {
 		const { i1, i2 } = vars;
-		// Add constraint for repetition: same recommendation index but different guidelines
 		const { strengthFunc, contribRecIdFunc, propertyFunc, derivativeFunc, valueFunc } = data;
 
 		const r1 = z3.Int.const('r1');

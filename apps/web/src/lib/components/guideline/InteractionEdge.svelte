@@ -19,10 +19,23 @@
 	const getInteractionColor = (label: string) => {
 		const colors: Record<string, string> = {
 			alternative: '#3b82f6',
+			recommondation_contradiction: '#f63b3b',
+			contribution_contradiction: '#f63b3b',
 			divergent: '#ef4444',
-			repetition: '#10b981'
+			repetition: '#10b981',
+			repairable: '#9027db',
+			side_effect: '#f59e0b'
 		};
 		return colors[label?.toLowerCase()] || '#6b7280';
+	};
+
+	const getInteractionName = (label: string) => {
+		if (label.includes('contradiction')) {
+			return 'contradiction';
+		} else if (label.includes('_')) {
+			return label.replace('_', ' ');
+		}
+		return label;
 	};
 
 	const color = getInteractionColor(label || '');
@@ -162,6 +175,6 @@
 		class="w-fit rounded bg-white px-1 text-xs font-medium shadow"
 		style={`border: 1px solid ${color}; color: ${color};`}
 	>
-		{label}
+		{getInteractionName(label || '')}
 	</div>
 </EdgeLabel>
