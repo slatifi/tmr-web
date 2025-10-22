@@ -16,6 +16,9 @@
 	const nodes = useNodes();
 	const { getNodesBounds } = useSvelteFlow();
 
+	const LABEL_PADDING = 4;
+	const NODE_PADDING = 8;
+
 	const getInteractionColor = (label: string) => {
 		const colors: Record<string, string> = {
 			alternative: '#3b82f6',
@@ -42,13 +45,29 @@
 	const labelWidth = 80;
 	const labelHeight = 24;
 
+	const generateSpiralOffsets = (maxRadius: number, step: number) => {
+		const offsets: { dy: number; dx: number }[] = [];
+		const angles = [0, 45, 90, 135, 180, 225, 270, 315];
+
+		for (let radius = step; radius <= maxRadius; radius += step) {
+			for (const angle of angles) {
+				const radians = (angle * Math.PI) / 180;
+				offsets.push({
+					dx: Math.cos(radians) * radius,
+					dy: Math.sin(radians) * radius
+				});
+			}
+		}
+		return offsets;
+	};
+
 	const isPositionOccupied = (x: number, y: number, width: number, height: number) => {
 		return edgeLabelStore.getOtherPositions(id).some((occupied) => {
 			return !(
-				x + width < occupied.x ||
-				x > occupied.x + occupied.width ||
-				y + height < occupied.y ||
-				y > occupied.y + occupied.height
+				x + width + LABEL_PADDING < occupied.x ||
+				x > occupied.x + occupied.width + LABEL_PADDING ||
+				y + height + LABEL_PADDING < occupied.y ||
+				y > occupied.y + occupied.height + LABEL_PADDING
 			);
 		});
 	};
@@ -58,10 +77,10 @@
 			const { x: nodeX, y: nodeY, width: nodeWidth, height: nodeHeight } = getNodesBounds([node]);
 
 			return !(
-				x + width < nodeX ||
-				x > nodeX + nodeWidth ||
-				y + height < nodeY ||
-				y > nodeY + nodeHeight
+				x + width + NODE_PADDING < nodeX ||
+				x > nodeX + nodeWidth + NODE_PADDING ||
+				y + height + NODE_PADDING < nodeY ||
+				y > nodeY + nodeHeight + NODE_PADDING
 			);
 		});
 	};
@@ -88,21 +107,7 @@
 			return { x: defaultX, y: defaultY };
 		}
 
-		// Try offset positions
-		const offsets = [
-			{ dx: 0, dy: -30 },
-			{ dx: 0, dy: 30 },
-			{ dx: -40, dy: 0 },
-			{ dx: 40, dy: 0 },
-			{ dx: -30, dy: -30 },
-			{ dx: 30, dy: -30 },
-			{ dx: -30, dy: 30 },
-			{ dx: 30, dy: 30 },
-			{ dx: 0, dy: -60 },
-			{ dx: 0, dy: 60 },
-			{ dx: -80, dy: 0 },
-			{ dx: 80, dy: 0 }
-		];
+		const offsets = generateSpiralOffsets(120, 12);
 
 		for (const offset of offsets) {
 			const testX = defaultX + offset.dx;
@@ -133,7 +138,7 @@
 		})
 	);
 
-	let optimalLabelPosition = $state({ x: defaultLabelX, y: defaultLabelY });
+	let optimalLabelPosition = $state({ x: 0, y: 0 });
 
 	$effect(() => {
 		const newPos = findOptimalLabelPosition(defaultLabelX, defaultLabelY);
@@ -169,7 +174,7 @@
 	});
 </script>
 
-<BaseEdge {id} path={customEdgePath} />
+<BaseEdge {id} path={customEdgePath} style={`stroke: ${color}; stroke-width: 1;`} />
 <EdgeLabel x={optimalLabelPosition.x} y={optimalLabelPosition.y}>
 	<div
 		class="w-fit rounded bg-white px-1 text-xs font-medium shadow"
