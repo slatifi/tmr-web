@@ -1,8 +1,10 @@
 import { createAuthClient } from 'better-auth/svelte';
+import { adminClient } from 'better-auth/client/plugins';
 import { env } from '$env/dynamic/public';
 
 export const auth = createAuthClient({
-	baseURL: env.PUBLIC_API_BASE_URL
+	baseURL: env.PUBLIC_API_BASE_URL,
+	plugins: [adminClient()]
 });
 
 export const {

@@ -18,6 +18,7 @@ export const authAsyncFactory = {
 		];
 
 		const adminUserIds = configService.get<string>('ADMIN_USER_IDS')?.split(',') ?? [];
+		console.log('Admin User IDs:', adminUserIds);
 
 		const options: BetterAuthOptions = {
 			database: prismaAdapter(prisma, {

@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { tick } from 'svelte';
 	import { signOut } from '$lib/auth';
+	import { impersonationStore } from '$lib/stores/ImpersonationStore.svelte';
 
 	import * as Avatar from '$lib/components/ui/avatar/index.js';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
@@ -64,6 +66,19 @@
 				</DropdownMenu.Label>
 				<DropdownMenu.Separator />
 				<DropdownMenu.Group>
+					{#if impersonationStore.isImpersonating()}
+						<DropdownMenu.Item
+							onclick={async () => {
+								await impersonationStore.stopImpersonation();
+								await tick();
+								window.location.reload();
+							}}
+						>
+							<LogOutIcon />
+							Stop Impersonation
+						</DropdownMenu.Item>
+						<DropdownMenu.Separator />
+					{/if}
 					<DropdownMenu.Item onclick={() => goto('/account')}>
 						<BadgeCheckIcon />
 						Account

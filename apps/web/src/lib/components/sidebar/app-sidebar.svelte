@@ -9,14 +9,15 @@
 	import HammerIcon from '@lucide/svelte/icons/hammer';
 	import MergeIcon from '@lucide/svelte/icons/merge';
 	import SidebarUser from './sidebar-user.svelte';
-	import { EyeIcon } from '@lucide/svelte';
+	import { EyeIcon, UsersIcon } from '@lucide/svelte';
+	import type { User } from '$lib/auth';
 
 	let {
 		ref = $bindable(null),
 		collapsible = 'icon',
 		user,
 		...restProps
-	}: ComponentProps<typeof Sidebar.Root> & { user: { name: string; email: string } } = $props();
+	}: ComponentProps<typeof Sidebar.Root> & { user: User } = $props();
 
 	const sidebarItems: SidebarItem[] = [
 		{
@@ -40,6 +41,15 @@
 			title: 'Interaction Detection',
 			icon: MergeIcon,
 			url: '/interactions'
+		}
+	];
+
+	const adminItems: SidebarItem[] = [
+		{
+			title: 'Manage Users',
+			icon: UsersIcon,
+			url: '/admin/users',
+			matcher: /^\/admin\/users(\/.*)?$/
 		}
 	];
 </script>
@@ -66,7 +76,7 @@
 		</Sidebar.Menu>
 	</Sidebar.Header>
 	<Sidebar.Content>
-		<SidebarNav items={sidebarItems} />
+		<SidebarNav items={sidebarItems} adminItems={user.role === 'admin' ? adminItems : []} />
 	</Sidebar.Content>
 	<Sidebar.Footer>
 		<SidebarUser {user} />
