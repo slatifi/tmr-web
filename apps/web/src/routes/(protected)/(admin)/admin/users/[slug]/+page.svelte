@@ -36,19 +36,21 @@
 	let showImpersonateDialog = $state(false);
 	let showToggleRoleDialog = $state(false);
 
-	let banReason = $state(data.user.banReason || '');
+	let banReason = $state(data.adminUser.banReason || '');
 	let banExpiresDate = $state<DateValue | undefined>();
 	let showBanCalendar = $state(false);
 
 	let error = $state<string | null>(null);
 	let actionLoading = $state(false);
 
+	let isMe = $state(data.user.id === data.adminUser.id);
+
 	async function handleBanUser() {
 		actionLoading = true;
 		error = null;
 
 		const response = await authClient.admin.banUser({
-			userId: data.user.id,
+			userId: data.adminUser.id,
 			banReason: banReason.trim() || undefined,
 			banExpiresIn: banExpiresDate
 				? Math.floor((banExpiresDate.toDate('UTC').getTime() - Date.now()) / 1000)
@@ -74,7 +76,7 @@
 		error = null;
 
 		const response = await authClient.admin.unbanUser({
-			userId: data.user.id
+			userId: data.adminUser.id
 		});
 
 		if (response.error) {
@@ -94,7 +96,7 @@
 		error = null;
 
 		const response = await authClient.admin.removeUser({
-			userId: data.user.id
+			userId: data.adminUser.id
 		});
 
 		if (response.error) {
@@ -114,7 +116,7 @@
 		error = null;
 
 		const response = await authClient.admin.updateUser({
-			userId: data.user.id,
+			userId: data.adminUser.id,
 			data: { emailVerified: true }
 		});
 
@@ -135,7 +137,7 @@
 		error = null;
 
 		const response = await authClient.admin.impersonateUser({
-			userId: data.user.id
+			userId: data.adminUser.id
 		});
 
 		if (response.error) {
@@ -145,7 +147,7 @@
 			return;
 		}
 
-		impersonationStore.setImpersonatedUser(data.user.id);
+		impersonationStore.setImpersonatedUser(data.adminUser.id);
 		await invalidate('app:user');
 		showImpersonateDialog = false;
 		goto('/dashboard');
@@ -157,8 +159,8 @@
 		error = null;
 
 		const response = await authClient.admin.setRole({
-			userId: data.user.id,
-			role: data.user.role === 'admin' ? 'user' : 'admin'
+			userId: data.adminUser.id,
+			role: data.adminUser.role === 'admin' ? 'user' : 'admin'
 		});
 
 		if (response.error) {
@@ -200,17 +202,17 @@
 				<div class="flex items-start gap-4">
 					<Avatar.Root class="size-16">
 						<Avatar.Fallback class="bg-sidebar-border text-lg">
-							{getUserInitials(data.user.name)}
+							{getUserInitials(data.adminUser.name)}
 						</Avatar.Fallback>
 					</Avatar.Root>
 					<div class="flex-1">
 						<div class="flex items-center gap-2">
-							<h2 class="text-2xl font-semibold">{data.user.name}</h2>
-							<Badge variant={data.user.role === 'admin' ? 'default' : 'secondary'}>
-								{data.user.role || 'user'}
+							<h2 class="text-2xl font-semibold">{data.adminUser.name}</h2>
+							<Badge variant={data.adminUser.role === 'admin' ? 'default' : 'secondary'}>
+								{data.adminUser.role || 'user'}
 							</Badge>
 						</div>
-						<p class="text-sm text-muted-foreground">{data.user.email}</p>
+						<p class="text-sm text-muted-foreground">{data.adminUser.email}</p>
 					</div>
 				</div>
 			</Card.Header>
@@ -220,7 +222,7 @@
 					<div>
 						<h3 class="mb-3 text-sm font-medium">Account Status</h3>
 						<div class="flex flex-wrap gap-2">
-							{#if data.user.banned}
+							{#if data.adminUser.banned}
 								<Badge variant="destructive" class="gap-1">
 									<UserXIcon class="size-3" />
 									Banned
@@ -231,7 +233,7 @@
 									Active
 								</Badge>
 							{/if}
-							{#if data.user.emailVerified}
+							{#if data.adminUser.emailVerified}
 								<Badge variant="outline" class="gap-1">
 									<CheckCircleIcon class="size-3" />
 									Email Verified
@@ -253,19 +255,19 @@
 							<div class="flex items-center gap-2">
 								<MailIcon class="size-4 text-muted-foreground" />
 								<span class="text-muted-foreground">User ID:</span>
-								<span class="font-mono">{data.user.id}</span>
+								<span class="font-mono">{data.adminUser.id}</span>
 							</div>
 							<div class="flex items-center gap-2">
 								<CalendarIcon class="size-4 text-muted-foreground" />
 								<span class="text-muted-foreground">Joined:</span>
-								<span>{data.user.createdAt.toLocaleDateString()}</span>
+								<span>{data.adminUser.createdAt.toLocaleDateString()}</span>
 							</div>
 							<div class="flex items-center gap-2">
 								<CalendarIcon class="size-4 text-muted-foreground" />
 								<span class="text-muted-foreground">Last Updated:</span>
-								<span>{data.user.updatedAt.toLocaleDateString()}</span>
+								<span>{data.adminUser.updatedAt.toLocaleDateString()}</span>
 							</div>
-							{#if data.user.role === 'admin'}
+							{#if data.adminUser.role === 'admin'}
 								<div class="flex items-center gap-2">
 									<ShieldCheckIcon class="size-4 text-muted-foreground" />
 									<span class="text-muted-foreground">Role:</span>
@@ -275,25 +277,25 @@
 						</div>
 					</div>
 
-					{#if data.user.banned}
+					{#if data.adminUser.banned}
 						<Separator />
 						<div class="grid gap-3">
 							<h3 class="text-sm font-medium text-destructive">Ban Information</h3>
 							<div class="grid gap-2 text-sm">
-								{#if data.user.banReason}
+								{#if data.adminUser.banReason}
 									<div class="flex items-center gap-2">
 										<ShieldIcon class="size-4 text-muted-foreground" />
 										<span class="text-muted-foreground">Reason:</span>
-										<div class="text-destructive">{data.user.banReason}</div>
+										<div class="text-destructive">{data.adminUser.banReason}</div>
 									</div>
 								{/if}
-								{#if data.user.banExpires}
+								{#if data.adminUser.banExpires}
 									<div class="flex items-center gap-2">
 										<CalendarIcon class="size-4 text-muted-foreground" />
 										<span class="text-muted-foreground">Expires:</span>
 										<span
-											>{data.user.banExpires
-												? data.user.banExpires.toLocaleDateString()
+											>{data.adminUser.banExpires
+												? data.adminUser.banExpires.toLocaleDateString()
 												: 'Never'}</span
 										>
 									</div>
@@ -313,31 +315,56 @@
 			</Card.Header>
 			<Card.Content>
 				<div class="grid gap-2">
-					{#if data.user.banned}
-						<Button variant="default" class="w-full" onclick={() => (showUnbanDialog = true)}>
+					{#if data.adminUser.banned}
+						<Button
+							variant="default"
+							class="w-full"
+							onclick={() => (showUnbanDialog = true)}
+							disabled={isMe}
+						>
 							<ShieldIcon class="size-4" />
 							Unban User
 						</Button>
 					{:else}
-						<Button variant="destructive" class="w-full" onclick={() => (showBanDialog = true)}>
+						<Button
+							variant="destructive"
+							class="w-full"
+							onclick={() => (showBanDialog = true)}
+							disabled={isMe}
+						>
 							<UserXIcon class="size-4" />
 							Ban User
 						</Button>
 					{/if}
 
-					{#if !data.user.emailVerified}
-						<Button variant="outline" class="w-full" onclick={() => (showVerifyDialog = true)}>
+					{#if !data.adminUser.emailVerified}
+						<Button
+							variant="outline"
+							class="w-full"
+							onclick={() => (showVerifyDialog = true)}
+							disabled={isMe}
+						>
 							<CheckCircleIcon class="size-4" />
 							Verify Email
 						</Button>
 					{/if}
 
-					<Button variant="outline" class="w-full" onclick={() => (showToggleRoleDialog = true)}>
+					<Button
+						variant="outline"
+						class="w-full"
+						onclick={() => (showToggleRoleDialog = true)}
+						disabled={isMe}
+					>
 						<ShieldCheckIcon class="size-4" />
-						{data.user.role === 'admin' ? 'Demote to User' : 'Promote to Admin'}
+						{data.adminUser.role === 'admin' ? 'Demote to User' : 'Promote to Admin'}
 					</Button>
 
-					<Button variant="outline" class="w-full" onclick={() => (showImpersonateDialog = true)}>
+					<Button
+						variant="outline"
+						class="w-full"
+						onclick={() => (showImpersonateDialog = true)}
+						disabled={isMe}
+					>
 						<UserIcon class="size-4" />
 						Impersonate User
 					</Button>
@@ -348,6 +375,7 @@
 						variant="outline"
 						class="w-full text-destructive hover:bg-destructive hover:text-destructive-foreground"
 						onclick={() => (showDeleteDialog = true)}
+						disabled={isMe}
 					>
 						<TrashIcon class="size-4" />
 						Delete User
@@ -364,7 +392,7 @@
 		<Dialog.Header>
 			<Dialog.Title>Ban User</Dialog.Title>
 			<Dialog.Description>
-				Ban {data.user.name} ({data.user.email})
+				Ban {data.adminUser.name} ({data.adminUser.email})
 			</Dialog.Description>
 		</Dialog.Header>
 		<div class="grid gap-4 py-4">
@@ -405,7 +433,7 @@
 		<Dialog.Header>
 			<Dialog.Title>Unban User</Dialog.Title>
 			<Dialog.Description>
-				Remove ban from {data.user.name} ({data.user.email})?
+				Remove ban from {data.adminUser.name} ({data.adminUser.email})?
 			</Dialog.Description>
 		</Dialog.Header>
 		<Dialog.Footer>
@@ -427,8 +455,8 @@
 		<Dialog.Header>
 			<Dialog.Title>Delete User</Dialog.Title>
 			<Dialog.Description>
-				Are you sure you want to permanently delete {data.user.name} ({data.user.email})? This
-				action cannot be undone.
+				Are you sure you want to permanently delete {data.adminUser.name} ({data.adminUser.email})?
+				This action cannot be undone.
 			</Dialog.Description>
 		</Dialog.Header>
 		<Dialog.Footer>
@@ -449,7 +477,7 @@
 	<Dialog.Content>
 		<Dialog.Header>
 			<Dialog.Title>Verify Email</Dialog.Title>
-			<Dialog.Description>Mark {data.user.email} as verified?</Dialog.Description>
+			<Dialog.Description>Mark {data.adminUser.email} as verified?</Dialog.Description>
 		</Dialog.Header>
 		<Dialog.Footer>
 			<Button variant="outline" onclick={() => (showVerifyDialog = false)}>Cancel</Button>
@@ -470,7 +498,8 @@
 		<Dialog.Header>
 			<Dialog.Title>Impersonate User</Dialog.Title>
 			<Dialog.Description>
-				Impersonate {data.user.name} ({data.user.email})? You will be logged in as this user.
+				Impersonate {data.adminUser.name} ({data.adminUser.email})? You will be logged in as this
+				user.
 			</Dialog.Description>
 		</Dialog.Header>
 		<Dialog.Footer>
@@ -492,8 +521,8 @@
 		<Dialog.Header>
 			<Dialog.Title>Change User Role</Dialog.Title>
 			<Dialog.Description>
-				Change role of {data.user.name} ({data.user.email}) to
-				{data.user.role === 'admin' ? ' user' : ' admin'}?
+				Change role of {data.adminUser.name} ({data.adminUser.email}) to
+				{data.adminUser.role === 'admin' ? ' user' : ' admin'}?
 			</Dialog.Description>
 		</Dialog.Header>
 		<Dialog.Footer>

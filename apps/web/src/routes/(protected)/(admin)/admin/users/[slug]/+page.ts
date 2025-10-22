@@ -21,7 +21,7 @@ export const load: PageLoad = async ({ params, depends }) => {
 	depends('app:admin-user');
 
 	return {
-		user: res.data.users[0] as User,
+		adminUser: res.data.users[0] as User,
 		meta: {
 			title: 'Manage User'
 		}
