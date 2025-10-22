@@ -1,4 +1,5 @@
 import { betterAuth, BetterAuthOptions } from 'better-auth';
+import { createAuthMiddleware } from 'better-auth/api';
 import { admin } from 'better-auth/plugins';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { PrismaClient } from '@prisma/client';
@@ -18,7 +19,6 @@ export const authAsyncFactory = {
 		];
 
 		const adminUserIds = configService.get<string>('ADMIN_USER_IDS')?.split(',') ?? [];
-		console.log('Admin User IDs:', adminUserIds);
 
 		const options: BetterAuthOptions = {
 			database: prismaAdapter(prisma, {
@@ -60,6 +60,19 @@ export const authAsyncFactory = {
 					<p>TMR Team</p>`
 					});
 				}
+			},
+			hooks: {
+				after: createAuthMiddleware(async (ctx) => {
+					const user = ctx.context?.newSession?.user || '';
+
+					if (user && user.role !== 'admin' && adminUserIds.includes(user.id)) {
+						await prisma.user.update({
+							where: { id: user.id },
+							data: { role: 'admin' }
+						});
+						console.log(`Updated user ${user.id} to admin role`);
+					}
+				})
 			}
 		};
 

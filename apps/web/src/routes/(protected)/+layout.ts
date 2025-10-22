@@ -1,4 +1,4 @@
-import { authClient, getSession } from '$lib/auth';
+import { getSession } from '$lib/auth';
 import { redirect } from '@sveltejs/kit';
 import type { Session, User } from '$lib/auth';
 import type { LayoutLoad } from './$types';
@@ -11,20 +11,6 @@ export const load: LayoutLoad = async ({ url, depends }) => {
 
 	if (!session || !user) {
 		redirect(302, '/login?redirect=' + encodeURIComponent(url.pathname));
-	}
-
-	if (user.role !== 'admin') {
-		// Admin role may be set by env instead
-		const res = await authClient.admin.listUsers({
-			query: { searchValue: user.email, searchField: 'email' }
-		});
-		if (res.data) {
-			user.role = 'admin';
-			await authClient.admin.updateUser({
-				userId: user.id,
-				data: { role: 'admin' }
-			});
-		}
 	}
 
 	return {
