@@ -12,6 +12,10 @@ on:
           - patch
           - minor
           - major
+      release_preamble:
+        description: 'Optional release preamble (what''s new in this release)'
+        required: false
+        type: string
 
 jobs:
   prepare-release:
@@ -99,12 +103,34 @@ jobs:
           git tag -a "v${{ steps.set-version.outputs.version }}" -m "Release v${{ steps.set-version.outputs.version }}"
           git push --follow-tags
 
+      - name: Extract current release changes
+        id: extract-changes
+        run: |
+          RELEASE_CHANGES=$(awk '/^## /{if (++count == 2) exit} count == 1 && !/^## / {print}' CHANGELOG.md | sed '/^$/d' | head -c 65000)
+          echo "$RELEASE_CHANGES" > current_release_changes.md
+
+      - name: Generate release notes
+        id: generate-notes
+        run: |
+          PREAMBLE="${{ github.event.inputs.release_preamble }}"
+          VERSION="${{ steps.set-version.outputs.version }}"
+
+          echo -e "# Release v$VERSION\n" > RELEASE_NOTES.md
+
+          if [ -n "$PREAMBLE" ]; then
+            echo -e "## 🎉 What's New\n" >> RELEASE_NOTES.md
+            echo -e "$PREAMBLE\n" >> RELEASE_NOTES.md
+          fi
+
+          echo -e "## 📋 Changelog\n" >> RELEASE_NOTES.md
+          cat current_release_changes.md >> RELEASE_NOTES.md
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: "v${{ steps.set-version.outputs.version }}"
           name: "v${{ steps.set-version.outputs.version }}"
-          body_path: CHANGELOG.md
+          body_path: RELEASE_NOTES.md
           draft: false
           prerelease: false
           token: ${{ steps.generate_token.outputs.token }}
