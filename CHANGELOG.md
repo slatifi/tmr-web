@@ -1,3 +1,16 @@
+## [1.1.1](https://github.com/slatifi/tmrw/compare/v1.1.0...v1.1.1) (2025-10-23)
+
+### Features
+
+* **web:** add visual indicator in interaction diagram for guidelines ([acc0859](https://github.com/slatifi/tmrw/commit/acc0859ef58236ba3cf2512cd4bffc455267ef43))
+
+### Bug Fixes
+
+* **web:** create a more robust InteractionEdge offset algorithm ([5c68260](https://github.com/slatifi/tmrw/commit/5c6826063aba07cd9cc1aae99b5e97b2e96c4847))
+
+### Reverts
+
+* remove Dockerfile deps step ([6f5e7b3](https://github.com/slatifi/tmrw/commit/6f5e7b393325a3ea548ae3177913d2767d409aab))
 ## [1.1.0](https://github.com/slatifi/tmrw/compare/v1.0.2...v1.1.0) (2025-10-22)
 
 ### Features
