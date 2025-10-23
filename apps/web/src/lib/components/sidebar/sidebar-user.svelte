@@ -71,6 +71,7 @@
 							onclick={async () => {
 								await impersonationStore.stopImpersonation();
 								await tick();
+								goto('/dashboard');
 								window.location.reload();
 							}}
 						>

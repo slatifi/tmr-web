@@ -1,14 +1,18 @@
 <script lang="ts">
-	import SelectGuideline from '$lib/components/guideline/SelectGuideline.svelte';
 	import type { GuidelineWithRelations, RecommendationWithRelations } from '@repo/shared-types';
 	import type { PageProps } from './$types';
+
 	import { SvelteFlow, type Node, type Edge, type NodeTypes } from '@xyflow/svelte';
 	import '@xyflow/svelte/dist/style.css';
+
+	import SelectGuideline from '$lib/components/guideline/SelectGuideline.svelte';
 	import GuidelineRecommendation from '$lib/components/guideline/GuidelineRecommendation.svelte';
 	import InteractionEdge from '$lib/components/guideline/InteractionEdge.svelte';
+
 	import { getSnomedNames } from '$lib/stores/SnomedStore.svelte';
+
 	import { SvelteMap } from 'svelte/reactivity';
-	import { fetchWithCredentials } from '$lib/utils';
+	import { fetchWithCredentials, getColourFromId } from '$lib/utils';
 
 	interface Interaction {
 		entity: 'recommendation' | 'contribution';
@@ -24,6 +28,7 @@
 	let recommendations: RecommendationWithRelations[] = $state([]);
 	let interactions: { [interactionType: string]: Interaction[] } = $state({});
 	let snomedDisplayMap: Map<string, string> = $state(new Map());
+	let guidelineMap: Map<number, { id: number; name: string }> = $state(new Map());
 	let selectRef: HTMLDivElement | null = $state(null);
 
 	async function loadSelectedGuidelines() {
@@ -57,6 +62,14 @@
 
 			// Fetch SNOMED display names for all codes
 			snomedDisplayMap = await getSnomedNames(codes);
+
+			// Generate a map from recommendation id to guideline id/name
+			guidelineMap = new SvelteMap();
+			guidelines.forEach((g) => {
+				g.recommendations.forEach((rec) => {
+					guidelineMap.set(rec.id, { id: g.id, name: g.title });
+				});
+			});
 		}
 
 		loading = false;
@@ -102,6 +115,7 @@
 					snomedDisplayMap: snomedDisplayMap || {},
 					editable: false,
 					svelteFlow: true,
+					guidelineInfo: guidelineMap.get(rec.id),
 					isLeftColumn: columnIndex === 0
 				},
 				draggable: true
@@ -212,8 +226,8 @@
 		/>
 	</div>
 
-	<!-- Statistics Panel (bottom left) -->
 	{#if recommendations.length > 0 && !loading}
+		<!-- Statistics Panel (bottom left) -->
 		<div
 			class="absolute bottom-4 left-4 z-10 rounded-lg border border-gray-200 bg-white p-4 shadow-lg"
 		>
@@ -238,6 +252,24 @@
 					</div>
 				</div>
 			{/if}
+		</div>
+
+		<!-- Guideline Key Panel (bottom right) -->
+		<div
+			class="absolute right-4 bottom-4 z-10 rounded-lg border border-gray-200 bg-white p-4 shadow-lg"
+		>
+			<h3 class="mb-2 text-sm font-semibold text-gray-800">Guideline Key</h3>
+			<div class="space-y-2 text-xs text-gray-600">
+				{#each selectedGuidelines as guidelineId (guidelineId)}
+					<div class="flex items-center gap-2">
+						<div
+							class="h-3 w-3 flex-shrink-0 rounded-sm"
+							style={`background-color: ${getColourFromId(guidelineId)}`}
+						></div>
+						<span>{data?.guidelines.find((g) => g.id === guidelineId)?.title}</span>
+					</div>
+				{/each}
+			</div>
 		</div>
 	{/if}
 

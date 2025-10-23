@@ -3,8 +3,10 @@
 	import DeleteModal from './DeleteModal.svelte';
 	import Contribution from './Contribution.svelte';
 	import { Handle, Position } from '@xyflow/svelte';
-	import { cn } from '$lib/utils';
+	import { cn, getColourFromId } from '$lib/utils';
+	import * as Tooltip from '$lib/components/ui/tooltip';
 	import { svelteFlowHandleStyle } from './utils';
+	import InfoIcon from '@lucide/svelte/icons/info';
 
 	interface Props {
 		recommendation: RecommendationWithRelations;
@@ -15,6 +17,10 @@
 		isLeftColumn?: boolean;
 		class?: string;
 		svelteFlow?: boolean;
+		guidelineInfo?: {
+			id: number;
+			name: string;
+		};
 	}
 
 	let { selected = $bindable(null), data }: { selected?: number | null; data: Props } = $props();
@@ -27,7 +33,8 @@
 		withContributions = true,
 		isLeftColumn = true,
 		class: className = '',
-		svelteFlow = false
+		svelteFlow = false,
+		guidelineInfo
 	}: Props = data;
 
 	let deleteContributionOpen = $state(false);
@@ -81,6 +88,24 @@
 			{/if}
 
 			<div class="flex justify-center gap-1 text-sm">
+				{#if guidelineInfo}
+					<Tooltip.Provider>
+						<Tooltip.Root delayDuration={200}>
+							<Tooltip.Trigger>
+								<InfoIcon
+									style={`color: ${getColourFromId(guidelineInfo.id)}`}
+									class="size-3"
+									strokeWidth={2.75}
+								/>
+							</Tooltip.Trigger>
+							<Tooltip.Content class="max-w-xs">
+								<div class="text-sm">
+									From guideline: <span class="font-medium">{guidelineInfo.name}</span>
+								</div>
+							</Tooltip.Content>
+						</Tooltip.Root>
+					</Tooltip.Provider>
+				{/if}
 				<p>R{i + 1}:</p>
 				<span class="font-semibold {textColor} whitespace-nowrap lowercase">
 					{recommendation.strength === 'NOT' ? 'should not' : recommendation.strength}
