@@ -92,6 +92,15 @@
 		{/if}
 		<form class="grid gap-4 py-4">
 			<div class="grid gap-2">
+				<Label for="action">Action prefix (optional)</Label>
+				<Input
+					bind:value={actionPrefix}
+					placeholder="Action prefix (e.g., Take, Administer)"
+					class="w-full text-sm"
+					disabled={loading}
+				/>
+			</div>
+			<div class="grid gap-2">
 				<Label for="action">Action</Label>
 				<SnomedSelect
 					bind:value={action}
@@ -102,15 +111,6 @@
 				{#if validation.action}
 					<p class="text-sm text-destructive">{validation.action}</p>
 				{/if}
-			</div>
-			<div class="grid gap-2">
-				<Label for="action">Action prefix (optional)</Label>
-				<Input
-					bind:value={actionPrefix}
-					placeholder="Action prefix (e.g., Take, Administer)"
-					class="w-full text-sm"
-					disabled={loading}
-				/>
 			</div>
 			<div class="grid gap-2">
 				<Label for="Strength">Strength</Label>
