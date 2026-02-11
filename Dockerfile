@@ -28,7 +28,7 @@ WORKDIR /usr/src/app
 ENV NODE_ENV=production
 RUN apt-get update && apt-get install -y openssl
 RUN chmod +x ./entrypoint.sh
-RUN pnpx prisma generate client
+RUN pnpx prisma@6.17.0 generate client
 
 EXPOSE 3000
 ENTRYPOINT ["./entrypoint.sh"]
