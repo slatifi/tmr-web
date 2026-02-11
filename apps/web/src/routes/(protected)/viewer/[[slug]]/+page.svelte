@@ -6,7 +6,8 @@
 	import GuidelineRecommendation from '$lib/components/guideline/GuidelineRecommendation.svelte';
 	import SelectGuideline from '$lib/components/guideline/SelectGuideline.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
-	import { fade } from 'svelte/transition';
+	import { CopyPlusIcon } from '@lucide/svelte';
+	import { fetchWithCredentials } from '$lib/utils';
 
 	const { data }: PageProps = $props();
 
@@ -37,6 +38,23 @@
 	const rightColumnRecs = $derived.by(() => {
 		return data?.guideline?.recommendations.filter((_, i) => i % 2 === 1) || [];
 	});
+
+	async function handleCopy() {
+		if (!data?.guideline) return;
+		try {
+			const res = await fetchWithCredentials(`/api/guideline/${data.guideline.id}/copy`, {
+				method: 'POST'
+			});
+			if (res.ok) {
+				const newGuideline = await res.json();
+				goto(`/builder/${newGuideline.id}`);
+			} else {
+				console.error('Failed to copy guideline');
+			}
+		} catch (error) {
+			console.error('Error copying guideline:', error);
+		}
+	}
 </script>
 
 <div
@@ -52,29 +70,43 @@
 			description="Please select a guideline to continue"
 		/>
 	</div>
-	{#if data?.guideline?.userId === data?.user.id}
-		<div transition:fade={{ duration: 300 }} class="absolute bottom-4 left-4 z-10">
-			<Card.Root style={`width:${selectRef?.clientWidth}px`} class="gap-3">
-				<Card.Header class="flex flex-col items-center justify-center overflow-hidden">
-					<Card.Title class="text-center text-base font-medium text-secondary-foreground"
-						>You are the owner of this guideline</Card.Title
-					>
-					<Card.Description class="ml-2 text-muted-foreground"
-						>Edit it in the builder</Card.Description
-					>
-				</Card.Header>
-				<Card.Content
-					class="flex flex-col gap-4 pt-0 text-center text-sm text-wrap text-muted-foreground"
-				>
-					<Button variant="outline" size="sm" onclick={() => goto(`/builder/${data.guideline?.id}`)}
-						>Go to Builder</Button
-					>
-				</Card.Content>
-			</Card.Root>
-		</div>
-	{/if}
 	{#key data.guideline}
 		{#if data.guideline}
+			<div class="absolute bottom-4 left-4 z-10">
+				<Card.Root style={`width:${selectRef?.clientWidth}px`} class="gap-3">
+					<Card.Header class="flex flex-col items-center justify-center overflow-hidden">
+						<Card.Title class="text-center text-base font-medium text-secondary-foreground">
+							{#if data?.guideline?.userId === data?.user.id}
+								You are the owner of this guideline
+							{:else}
+								Want to edit this guideline?
+							{/if}
+						</Card.Title>
+						<Card.Description class="ml-2 text-muted-foreground">
+							{#if data?.guideline?.userId === data?.user.id}
+								Edit it in the builder
+							{:else}
+								Make a copy
+							{/if}
+						</Card.Description>
+					</Card.Header>
+					<Card.Content
+						class="flex flex-col gap-4 pt-0 text-center text-sm text-wrap text-secondary-foreground"
+					>
+						{#if data?.guideline?.userId === data?.user.id}
+							<Button
+								variant="outline"
+								size="sm"
+								onclick={() => goto(`/builder/${data.guideline?.id}`)}>Go to Builder</Button
+							>
+						{:else}
+							<Button variant="outline" size="sm" onclick={handleCopy}
+								><CopyPlusIcon /> Duplicate and Modify</Button
+							>
+						{/if}
+					</Card.Content>
+				</Card.Root>
+			</div>
 			<div
 				style:margin-left={selectRef?.clientWidth + 'px'}
 				class="h-full max-h-[90vh] overflow-y-auto p-4 pl-6"

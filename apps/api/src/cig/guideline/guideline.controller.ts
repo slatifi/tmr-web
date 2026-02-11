@@ -50,6 +50,11 @@ export class GuidelineController {
 		return this.guidelineService.findOne(id, false);
 	}
 
+	@Post(':id/copy')
+	copy(@Param('id', ParseIntPipe) id: number, @Session() session: UserSession) {
+		return this.guidelineService.copy(id, session.user.id);
+	}
+
 	@Patch(':id')
 	@ResourceOwnership('guideline')
 	update(@Param('id', ParseIntPipe) id: number, @Body() updateGuidelineDto: UpdateGuidelineDto) {

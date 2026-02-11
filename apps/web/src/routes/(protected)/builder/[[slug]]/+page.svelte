@@ -49,6 +49,7 @@
 	<SelectOrCreateGuideline bind:selectedGuideline guidelines={data?.guidelines} />
 	<GuidelineToolbar
 		guideline={data.guideline}
+		bind:selectedGuideline
 		bind:ref={toolbarRef}
 		bind:recommendationId={selectedRecommendation}
 		{recommendation}

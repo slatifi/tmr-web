@@ -15,6 +15,7 @@
 
 	interface Props {
 		guideline: Guideline | null;
+		selectedGuideline: number | null;
 		ref: HTMLDivElement | null;
 		recommendationId: number | null;
 		recommendation: Recommendation | null;
@@ -23,6 +24,7 @@
 
 	let {
 		guideline,
+		selectedGuideline = $bindable(-1),
 		ref = $bindable(null),
 		recommendationId = $bindable(null),
 		recommendation,
@@ -116,6 +118,25 @@
 		recommendationId = null;
 		await tick(); // wait for DOM update
 		goto('/builder', { replaceState: true });
+	}
+
+	async function handleCopyGuideline() {
+		if (!guideline) return;
+		try {
+			const res = await fetchWithCredentials(`/api/guideline/${guideline.id}/copy`, {
+				method: 'POST'
+			});
+			if (res.ok) {
+				const newGuideline = await res.json();
+				invalidate('app:guidelines');
+				await tick();
+				selectedGuideline = newGuideline.id;
+			} else {
+				console.error('Failed to copy guideline');
+			}
+		} catch (error) {
+			console.error('Error copying guideline:', error);
+		}
 	}
 </script>
 
@@ -221,7 +242,9 @@
 				guidelineId={guideline?.id}
 				onCreate={(id: number) => (recommendationId = id)}
 			/>
-			<!-- Delete button -->
+			<Button variant="outline" size="sm" onclick={handleCopyGuideline} class="mb-2 w-full"
+				>Duplicate</Button
+			>
 			<Button
 				variant="destructive"
 				size="sm"

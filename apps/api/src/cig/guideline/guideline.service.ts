@@ -4,6 +4,7 @@ import { UpdateGuidelineDto } from './dto/update-guideline.dto';
 import { DatabaseService } from '@/database/database.service';
 import { Guideline } from './entities/guideline.entity';
 import { ExpandedGuideline } from './entities/expanded-guideline.entity';
+import { copyGuideline } from './utils';
 
 @Injectable()
 export class GuidelineService {
@@ -61,6 +62,10 @@ export class GuidelineService {
 			if (!guideline) throw new NotFoundException(`Guideline with ID ${id} not found`);
 			return new Guideline(guideline);
 		}
+	}
+
+	async copy(id: number, userId: string) {
+		return await copyGuideline(this.db, id, userId);
 	}
 
 	async update(id: number, updateGuidelineDto: UpdateGuidelineDto) {
