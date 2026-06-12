@@ -16,7 +16,6 @@ export class SideEffectInteractionRule implements InteractionRule {
 
 	define(z3: Context, solver: Solver, vars: InteractionVariables, data: EncodedData) {
 		const { i1, i2 } = vars;
-		// Add constraint for repetition: same recommendation index but different guidelines
 		const { strengthFunc, contribRecIdFunc, propertyFunc, derivativeFunc, valueFunc } = data;
 
 		const r1 = z3.Int.const('r1');
@@ -32,8 +31,8 @@ export class SideEffectInteractionRule implements InteractionRule {
 		// i1 should have a positive value and i2 should be a negative or neutral contribution
 		const i1Value = z3.Eq(valueFunc.call(i1), InteractionService.contributionValueMap.POSITIVE);
 		const i2Value = z3.Or(
-			z3.Eq(valueFunc.call(i1), InteractionService.contributionValueMap.NEUTRAL),
-			z3.Eq(valueFunc.call(i1), InteractionService.contributionValueMap.NEGATIVE)
+			z3.Eq(valueFunc.call(i2), InteractionService.contributionValueMap.NEUTRAL),
+			z3.Eq(valueFunc.call(i2), InteractionService.contributionValueMap.NEGATIVE)
 		);
 
 		// contributions should have the same property
