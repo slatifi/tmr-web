@@ -11,13 +11,11 @@ import { AlternativeInteractionRule } from './rules/alternative.rule';
 import { RepairableInteractionRule } from './rules/repairable.rule';
 import { SideEffectInteractionRule } from './rules/side_effect.rule';
 import { SnomedModule } from '@/snomed/snomed.module';
-import { SnomedService } from '@/snomed/snomed.service';
 
 @Module({
 	imports: [GuidelineModule, SnomedModule],
 	providers: [
 		InteractionService,
-		SnomedService,
 		// Rules
 		RepetitionInteractionRule,
 		RecommendationContradictionInteractionRule,

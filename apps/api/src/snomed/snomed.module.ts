@@ -6,6 +6,7 @@ import { SnomedController } from './snomed.controller';
 @Module({
 	imports: [ConfigModule],
 	providers: [SnomedService],
-	controllers: [SnomedController]
+	controllers: [SnomedController],
+	exports: [SnomedService]
 })
 export class SnomedModule {}
