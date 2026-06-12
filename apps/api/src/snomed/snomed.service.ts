@@ -2,10 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SNOMEDSubsumes } from './snomed.interface';
 
+type SnomedSubsumesKey = `${string}|${string}`;
+
 @Injectable()
 export class SnomedService {
 	private authToken: string | null = null;
-	private submusesCache: Map<Record<string, string>, SNOMEDSubsumes> = new Map();
+	private subsumesCache: Map<SnomedSubsumesKey, SNOMEDSubsumes> = new Map();
 
 	constructor(private configService: ConfigService) {}
 
@@ -46,9 +48,13 @@ export class SnomedService {
 		};
 	}
 
+	private getCacheKey(codeA: string, codeB: string): SnomedSubsumesKey {
+		return `${codeA}|${codeB}`;
+	}
+
 	async subsumes(codeA: string, codeB: string): Promise<SNOMEDSubsumes> {
 		// Check cache first
-		const cacheValue = this.submusesCache.get({ codeA, codeB });
+		const cacheValue = this.subsumesCache.get(this.getCacheKey(codeA, codeB));
 		if (cacheValue) return cacheValue;
 
 		const url = new URL(
@@ -73,16 +79,16 @@ export class SnomedService {
 		const data = await res.json();
 		const value = data.parameter[0].valueCode as SNOMEDSubsumes;
 
-		this.addToCache({ codeA, codeB }, value);
+		this.addToCache(this.getCacheKey(codeA, codeB), value);
 		return value;
 	}
 
-	private addToCache(key: Record<string, string>, value: SNOMEDSubsumes) {
-		if (this.submusesCache.size >= 1000) {
+	private addToCache(key: SnomedSubsumesKey, value: SNOMEDSubsumes) {
+		if (this.subsumesCache.size >= 1000) {
 			// Simple cache eviction: remove the first inserted item
-			const firstKey = this.submusesCache.keys().next().value;
-			if (firstKey) this.submusesCache.delete(firstKey);
+			const firstKey = this.subsumesCache.keys().next().value;
+			if (firstKey) this.subsumesCache.delete(firstKey);
 		}
-		this.submusesCache.set(key, value);
+		this.subsumesCache.set(key, value);
 	}
 }
