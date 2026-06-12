@@ -12,3 +12,6 @@
 
 # Prisma 
 **/generated/prisma/
+
+# DBs
+*.db
