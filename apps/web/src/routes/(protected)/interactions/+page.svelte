@@ -261,12 +261,13 @@
 			<h3 class="mb-2 text-sm font-semibold text-gray-800">Guideline Key</h3>
 			<div class="space-y-2 text-xs text-gray-600">
 				{#each selectedGuidelines as guidelineId (guidelineId)}
+					{@const guideline = data?.guidelines.find((g) => g.id === guidelineId)}
 					<div class="flex items-center gap-2">
 						<div
 							class="h-3 w-3 flex-shrink-0 rounded-sm"
 							style={`background-color: ${getColourFromId(guidelineId)}`}
 						></div>
-						<span>{data?.guidelines.find((g) => g.id === guidelineId)?.title}</span>
+						<a href={`/viewer/${guideline?.id}`} class="hover:underline">{guideline?.title}</a>
 					</div>
 				{/each}
 			</div>
