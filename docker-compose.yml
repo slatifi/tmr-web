@@ -50,7 +50,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-example_password}
       POSTGRES_DB: ${POSTGRES_DB:-tmrdb}
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - db_data:/var/lib/postgresql
 
 volumes:
   db_data:
