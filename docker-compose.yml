@@ -23,6 +23,9 @@ services:
       - DATABASE_URL=postgresql://${POSTGRES_USER:-tmr}:${POSTGRES_PASSWORD:-example_password}@tmr-web_db:5432/${POSTGRES_DB:-tmrdb}
       - BETTER_AUTH_URL=$BASE_URL
       - TRUSTED_ORIGINS=$BASE_URL
+    # Only uncomment if you want to use a precomputed transitive closure db (see scripts/transitiveclosure)
+    # volumes:
+    #   - ./path/to/snomed.db:/usr/src/app/snomed.db
 
   proxy:
     image: caddy:latest

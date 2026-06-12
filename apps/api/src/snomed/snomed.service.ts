@@ -1,15 +1,31 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SNOMEDSubsumes } from './snomed.interface';
+import Database from 'better-sqlite3';
 
 type SnomedSubsumesKey = `${string}|${string}`;
 
 @Injectable()
-export class SnomedService {
+export class SnomedService implements OnModuleInit {
+	private readonly logger = new Logger(SnomedService.name);
 	private authToken: string | null = null;
 	private subsumesCache: Map<SnomedSubsumesKey, SNOMEDSubsumes> = new Map();
+	private tcDb: Database.Database | null = null;
 
 	constructor(private configService: ConfigService) {}
+
+	onModuleInit() {
+		const dbPath = this.configService.get<string>('SNOMED_TC_DB_PATH');
+		if (dbPath) {
+			try {
+				this.tcDb = new Database(dbPath, { readonly: true });
+				this.logger.log(`Using local transitive closure DB: ${dbPath}`);
+			} catch (error) {
+				this.logger.error(`Failed to load transitive closure DB from ${dbPath}: ${error}`);
+				this.tcDb = null;
+			}
+		}
+	}
 
 	async ensureAuthToken(): Promise<void> {
 		if (this.authToken) return;
@@ -53,10 +69,37 @@ export class SnomedService {
 	}
 
 	async subsumes(codeA: string, codeB: string): Promise<SNOMEDSubsumes> {
-		// Check cache first
 		const cacheValue = this.subsumesCache.get(this.getCacheKey(codeA, codeB));
 		if (cacheValue) return cacheValue;
+		const value = this.tcDb
+			? this.subsumesFromDb(codeA, codeB)
+			: await this.subsumesFromTerminologyServer(codeA, codeB);
 
+		this.addToCache(this.getCacheKey(codeA, codeB), value);
+		return value;
+	}
+
+	private subsumesFromDb(codeA: string, codeB: string): SNOMEDSubsumes {
+		if (codeA === codeB) return SNOMEDSubsumes.EQUIVALENT;
+
+		const db = this.tcDb!;
+		const aSubsumesB = db
+			.prepare('SELECT 1 FROM transitive_closure WHERE child = ? AND ancestor = ? LIMIT 1')
+			.get(codeB, codeA);
+		if (aSubsumesB) return SNOMEDSubsumes.SUBSUMES;
+
+		const aSubsumedBy = db
+			.prepare('SELECT 1 FROM transitive_closure WHERE child = ? AND ancestor = ? LIMIT 1')
+			.get(codeA, codeB);
+		if (aSubsumedBy) return SNOMEDSubsumes.SUMSUMED_BY;
+
+		return SNOMEDSubsumes.NONE;
+	}
+
+	private async subsumesFromTerminologyServer(
+		codeA: string,
+		codeB: string
+	): Promise<SNOMEDSubsumes> {
 		const url = new URL(
 			(this.configService.get('SNOMED_BASE_URL') as string) + '/CodeSystem/$subsumes'
 		);
@@ -77,10 +120,7 @@ export class SnomedService {
 		}
 
 		const data = await res.json();
-		const value = data.parameter[0].valueCode as SNOMEDSubsumes;
-
-		this.addToCache(this.getCacheKey(codeA, codeB), value);
-		return value;
+		return data.parameter[0].valueCode as SNOMEDSubsumes;
 	}
 
 	private addToCache(key: SnomedSubsumesKey, value: SNOMEDSubsumes) {
