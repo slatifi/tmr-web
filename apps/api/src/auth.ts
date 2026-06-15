@@ -20,6 +20,10 @@ export const authAsyncFactory = {
 
 		const adminUserIds = configService.get<string>('ADMIN_USER_IDS')?.split(',') ?? [];
 
+		const requireEmailVerification =
+			configService.get<string>('REQUIRE_EMAIL_VERIFICATION') === 'true' ||
+			configService.get<string>('REQUIRE_EMAIL_VERIFICATION') === undefined;
+
 		const options: BetterAuthOptions = {
 			database: prismaAdapter(prisma, {
 				provider: 'postgresql'
@@ -27,7 +31,7 @@ export const authAsyncFactory = {
 			trustedOrigins,
 			plugins: [admin({ adminUserIds })],
 			emailVerification: {
-				sendOnSignUp: true,
+				sendOnSignUp: requireEmailVerification,
 				autoSignInAfterVerification: true,
 				sendVerificationEmail: async ({ user, url }) => {
 					await resend.emails.send({
@@ -46,7 +50,7 @@ export const authAsyncFactory = {
 			emailAndPassword: {
 				enabled: true,
 				autoSignIn: false,
-				requireEmailVerification: true,
+				requireEmailVerification,
 				sendResetPassword: async ({ user, url }) => {
 					await resend.emails.send({
 						from: `TMR-W <${sendEmail}>`,

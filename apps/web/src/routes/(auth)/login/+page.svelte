@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import type { PageProps } from './$types';
+	import { env } from '$env/dynamic/public';
 
 	import { signIn } from '$lib/auth';
 	import { Button } from '$lib/components/ui/button';
@@ -43,6 +44,13 @@
 
 		return goto('/dashboard');
 	}
+
+	const registeredText = $derived(
+		env.PUBLIC_REQUIRE_EMAIL_VERIFICATION === 'true' ||
+			env.PUBLIC_REQUIRE_EMAIL_VERIFICATION === undefined
+			? 'You have successfully registered. Please verify your email prior to logging in.'
+			: 'You have successfully registered. You can now log in.'
+	);
 </script>
 
 <Card.Root class="mx-auto w-full max-w-sm">
@@ -58,7 +66,7 @@
 		{/if}
 		{#if data?.registered}
 			<div class="mb-5 rounded-md bg-sidebar-accent p-4 text-sm text-sidebar-accent-foreground">
-				You have successfully registered. Please verify your email prior to logging in.
+				{registeredText}
 			</div>
 		{/if}
 		{#if data?.redirect}

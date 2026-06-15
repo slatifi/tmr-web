@@ -10,6 +10,7 @@ services:
     environment:
       - PUBLIC_SNOMED_BASE_URL=$SNOMED_BASE_URL
       - PUBLIC_API_BASE_URL=$BASE_URL
+      - PUBLIC_REQUIRE_EMAIL_VERIFICATION={$REQUIRE_EMAIL_VERIFICATION:-true}
 
   tmr-web_api:
     image: ghcr.io/slatifi/tmr-web_api:latest
