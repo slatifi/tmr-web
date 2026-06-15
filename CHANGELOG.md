@@ -1,3 +1,21 @@
+## [1.3.0](https://github.com/slatifi/tmr-web/compare/v1.2.0...v1.3.0) (2026-06-15)
+
+### Features
+
+* **api:** allow email verification to be disabled ([e0e1379](https://github.com/slatifi/tmr-web/commit/e0e137925f5a41b5a9294439aed3fe95f86c91a0))
+* **api:** allow snomed service to use closure db instead of api ([46c4c26](https://github.com/slatifi/tmr-web/commit/46c4c260ab9e86bdd74a6a23871da1093586a318))
+* **api:** create script to generate transitive closure from snomed release ([2879413](https://github.com/slatifi/tmr-web/commit/287941349cfa79b96c34c9f695fe2026632d6bf9))
+* **web:** add links to guideline to interaction key ([3f3e639](https://github.com/slatifi/tmr-web/commit/3f3e63969ae212faef2d0e679a302a9ae3927afc))
+
+### Bug Fixes
+
+* **api:** correct typo in side effect interaction rule ([032c70a](https://github.com/slatifi/tmr-web/commit/032c70ae4428b4078a2537127b0f27583acfc375))
+* **api:** multiple snomed service instantiation ([138996a](https://github.com/slatifi/tmr-web/commit/138996a8538a0384cfdf95eabba85e957b52e9bb))
+* **api:** snomed subsumes cache never worked, change key to string over object ([0f02b54](https://github.com/slatifi/tmr-web/commit/0f02b54157a4b4672b3089bea2ae93acf6347354))
+
+### Performance Improvements
+
+* **build:** use matrix strategy for multi-arch builds ([59a6e7e](https://github.com/slatifi/tmr-web/commit/59a6e7ed91a4ddf5dbe88b959ef1f1e9f9b08214))
 ## 1.2.0 (2026-02-11)
 
 ### Features
